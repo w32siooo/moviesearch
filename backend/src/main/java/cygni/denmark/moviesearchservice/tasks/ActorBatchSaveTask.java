@@ -17,9 +17,14 @@ public class ActorBatchSaveTask {
     public static final int PG_BATCH_SIZE = 50;
     private final HikariDataSource hikariDataSource;
 
+    /**
+     * This method takes in a list of actors and then batch saves it in the relevant repositories.
+     */
+
     public Long batchSave(final List<ActorDb> actors) {
         long toreturn = 0;
         try (Connection connection = hikariDataSource.getConnection()) {
+
             doBatchSaveActors(actors, connection);
             List<AbstractIngestTask.StringUUID> knownFor = new ArrayList<>();
             List<AbstractIngestTask.StringUUID> primaryProf = new ArrayList<>();
@@ -34,7 +39,7 @@ public class ActorBatchSaveTask {
             doBatchSaveKnownFor(knownFor, connection);
             doBatchSavePrimaryProfession(primaryProf, connection);
             toreturn = actors.size();
-        } catch (SQLException exception) {
+        } catch (SQLException ignored) {
 
         }
         return toreturn;
@@ -59,7 +64,6 @@ public class ActorBatchSaveTask {
                 }
                 counter++;
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();

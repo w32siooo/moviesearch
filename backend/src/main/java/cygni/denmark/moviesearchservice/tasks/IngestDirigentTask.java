@@ -16,7 +16,7 @@ public class IngestDirigentTask {
 
     private final ActorDbIngestTask actorDbIngestTask;
 
-    private final MovieIngestTask movieIngestTask;
+    private final MovieDbIngestTask movieDbIngestTask;
 
     private final CleanElasticService cleanElasticService;
 
@@ -32,12 +32,14 @@ public class IngestDirigentTask {
                 .cleanRepos()
                 .then(actorDbIngestTask.run())
                 .doOnSuccess(inserted -> log.info("{} Actor elements indexed in postgres ", inserted))
+                .then(movieDbIngestTask.run())
+                .doOnSuccess(inserted -> log.info("{} Movie elements indexed in postgres ", inserted))
                 .block();
 
         actorDocIngestTask.streamToElasticFromJpaAndBlock();
 
         long endTime = Instant.now().toEpochMilli() - startTime;
-        log.info("scheduled task ended, it took {} seconds", endTime / 1000);
+        log.info("scheduled task ended, it took {} seconds and {} miliseconds", endTime % 1000, endTime - endTime%1000);
 
     }
 }

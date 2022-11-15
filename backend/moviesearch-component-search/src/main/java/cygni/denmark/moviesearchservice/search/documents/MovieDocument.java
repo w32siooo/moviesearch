@@ -36,9 +36,6 @@ public class MovieDocument {
     @Field(type = FieldType.Text)
     private String originalTitle;
 
-    @Field(type = FieldType.Boolean)
-    private Boolean isAdult;
-
     @Field(type = FieldType.Integer)
     private Integer startYear;
 

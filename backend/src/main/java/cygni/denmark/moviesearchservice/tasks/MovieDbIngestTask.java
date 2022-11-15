@@ -8,24 +8,24 @@ import cygni.denmark.moviesearchservice.search.documents.MovieDocument;
 import cygni.denmark.moviesearchservice.search.repositories.MovieDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.common.util.set.Sets;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
+import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuples;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MovieIngestTask extends AbstractIngestTask {
+public class MovieDbIngestTask extends AbstractIngestTask {
     private final HikariDataSource hikariDataSource;
     private final MovieDocumentRepository movieDocumentRepository;
 
@@ -35,12 +35,12 @@ public class MovieIngestTask extends AbstractIngestTask {
     @Value("${cygni.moviesTsv}")
     public String MOVIES_TSV_PATH;
 
-    public Mono<Long> run(long batchSize) {
+    public Mono<Long> run() {
         log.info("Data ingestion of movie file started");
 
-        Flux<MovieDb> moviesFlux = getLines(MOVIES_TSV_PATH)
+        return indexMovies(getLines(MOVIES_TSV_PATH)
                 .skip(1)
-                .take(batchSize) // Because we are testing, limit the amount of rows.
+                .take(take) // Because we are testing, limit the amount of rows.
                 .map(s -> s.replaceAll("\\\\N", "0000"))
                 .map(s -> s.split("\t"))
                 .flatMap(movies -> reactiveUUIDGenerator()
@@ -53,42 +53,45 @@ public class MovieIngestTask extends AbstractIngestTask {
                                 movies.getT1()[1],
                                 movies.getT1()[2],
                                 movies.getT1()[3],
-                                !Objects.equals(movies.getT1()[4], "0"),
                                 Integer.parseInt(movies.getT1()[5]),
                                 Integer.parseInt(movies.getT1()[6]),
                                 Integer.parseInt(movies.getT1()[7]),
-                                Arrays.asList(movies.getT1()[8].split(",")))
-                )
-                .publish()
-                .autoConnect(2);
+                                Sets.newHashSet(movies.getT1()[8].split(",")))
+                ).buffer(PG_BUFFER_SIZE));
 
-
-        return Mono.zip(indexMovies(moviesFlux), indexMovieDocuments(moviesFlux))
-                .map(Tuple2::getT2);
+    }
+    private Mono<Long> indexMovies(Flux<List<MovieDb>> moviesFlux) {
+        return moviesFlux
+                .flatMap(movieBuffer -> Mono.fromCallable(() ->
+                                batchSaveMovies(movieBuffer))
+                        .subscribeOn(Schedulers.boundedElastic()))
+                .retry(5)
+                .reduce(Long::sum);
     }
 
-    private Mono<Long> indexMovies(Flux<MovieDb> moviesFlux) {
-        return moviesFlux.count();
-    }
 
-    public void batchSaveActors(List<ActorDb> actorData) {
+    public Long batchSaveMovies(List<MovieDb> movieData) {
         String sql =
-                "INSERT INTO actors (id, version, nconst, birth_year, death_year, primary_name) " +
-                        "VALUES (?, ?, ?, ?, ?,?)";
+                "INSERT INTO movies (id, end_year,original_title," +
+                        "primary_title,runtime_minutes,start_year,tconst,title_type,version) " +
+                        "VALUES (?, ?, ?, ?, ?,?,?,?,?)";
         try (Connection connection = hikariDataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             int counter = 0;
-            for (ActorDb actor : actorData) {
+            for (MovieDb movie : movieData) {
                 statement.clearParameters();
-                statement.setObject(1, actor.getId());
-                statement.setLong(2, actor.getVersion());
-                statement.setString(3, actor.getNconst());
-                statement.setInt(4, actor.getBirthYear());
-                statement.setInt(5, actor.getDeathYear());
-                statement.setString(6, actor.getPrimaryName());
+                statement.setObject(1, movie.getId());
+                statement.setInt(2, movie.getEndYear());
+                statement.setString(3, movie.getOriginalTitle());
+                statement.setString(4, movie.getPrimaryTitle());
+                statement.setInt(5, movie.getRuntimeMinutes());
+                statement.setInt(6, movie.getStartYear());
+                statement.setString(7, movie.getTconst());
+                statement.setString(8, movie.getTitleType());
+                statement.setLong(9, movie.getVersion());
                 statement.addBatch();
-                if ((counter + 1) % PG_BATCH_SIZE == 0 || (counter + 1) == actorData.size()) {
+                if ((counter + 1) % PG_BATCH_SIZE == 0 || (counter + 1) == movieData.size()) {
                     statement.executeBatch();
                     statement.clearBatch();
                 }
@@ -97,6 +100,7 @@ public class MovieIngestTask extends AbstractIngestTask {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return 0L;
     }
     @Value("${cygni.elasticWindow}")
     public Integer elasticWindowSize;

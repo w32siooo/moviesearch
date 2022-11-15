@@ -15,7 +15,8 @@ import java.util.stream.BaseStream;
 public abstract class AbstractIngestTask {
     @Value("${cygni.take}")
     public Integer take;
-
+    @Value("${cygni.postgresBufferSize}")
+    public Integer PG_BUFFER_SIZE;
     protected Flux<String> getLines(String path) {
         return Flux.using(
                 () -> Files.lines(Path.of(path), StandardCharsets.UTF_8),

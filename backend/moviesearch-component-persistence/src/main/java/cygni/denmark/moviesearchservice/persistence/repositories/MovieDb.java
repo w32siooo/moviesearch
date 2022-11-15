@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -27,8 +28,6 @@ public class MovieDb {
 
     private String originalTitle;
 
-    private Boolean isAdult;
-
     private Integer startYear;
 
     private Integer endYear;
@@ -36,5 +35,5 @@ public class MovieDb {
     private Integer runtimeMinutes;
     @ElementCollection
     @CollectionTable(name = "genres")
-    private List<String> genres;
+    private Set<String> genres;
 }

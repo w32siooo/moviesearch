@@ -25,8 +25,10 @@ public class ActorDbIngestTask extends AbstractIngestTask {
     @Value("${cygni.actorsTsv}")
     public String NAME_BASICS_TSV_PATH;
 
-    @Value("${cygni.postgresBufferSize}")
-    public Integer PG_BUFFER_SIZE;
+
+/**
+ * Parses the TSV file and splits it up into buffers of lists. These get sent to the batch save task component.
+ */
 
     public Mono<Long> run() {
         log.info("Data ingestion of actor file started, requested indexing of {} elements",take);
