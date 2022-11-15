@@ -22,6 +22,8 @@ public class IngestDirigentTask {
 
     private final ActorSearchService actorSearchService;
 
+    private final MovieDocIngestTask movieDocIngestTask;
+
     private final ActorDocIngestTask actorDocIngestTask;
 
     @Scheduled(fixedDelay = Long.MAX_VALUE, initialDelay = 1000)
@@ -37,7 +39,7 @@ public class IngestDirigentTask {
                 .block();
 
         actorDocIngestTask.streamToElasticFromJpaAndBlock();
-
+        movieDocIngestTask.streamToElasticFromJpaAndBlock();
         long endTime = Instant.now().toEpochMilli() - startTime;
         log.info("scheduled task ended, it took {} seconds and {} miliseconds", endTime / 1000, endTime%1000);
 

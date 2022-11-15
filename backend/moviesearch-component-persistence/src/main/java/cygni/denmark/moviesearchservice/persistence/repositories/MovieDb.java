@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class MovieDb {
     private UUID id;
     @Version
     private Long version;
+    private Timestamp timestamp;
 
     private String tconst;
 

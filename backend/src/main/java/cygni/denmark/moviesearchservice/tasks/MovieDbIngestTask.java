@@ -21,7 +21,9 @@ import reactor.util.function.Tuples;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -50,6 +52,7 @@ public class MovieDbIngestTask extends AbstractIngestTask {
                         new MovieDb(
                                 movies.getT2(),
                                 0L,
+                                new Timestamp(new Date().getTime()),
                                 movies.getT1()[0],
                                 movies.getT1()[1],
                                 movies.getT1()[2],
