@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import cygni.denmark.moviesearchservice.persistence.repositories.ActorDb;
 import cygni.denmark.moviesearchservice.persistence.repositories.MovieDb;
 import cygni.denmark.moviesearchservice.search.documents.MovieDocument;
+import cygni.denmark.moviesearchservice.search.models.Movie;
 import cygni.denmark.moviesearchservice.search.repositories.MovieDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +20,18 @@ import reactor.util.function.Tuples;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class MovieDbIngestTask extends AbstractIngestTask {
-    private final HikariDataSource hikariDataSource;
-    private final MovieDocumentRepository movieDocumentRepository;
 
-    private final ModelMapper modelMapper;
-    public static final int PG_BATCH_SIZE = 50;
+    private final MovieBatchSaveTask movieBatchSaveTask;
+
+
 
     @Value("${cygni.moviesTsv}")
     public String MOVIES_TSV_PATH;
@@ -63,53 +64,15 @@ public class MovieDbIngestTask extends AbstractIngestTask {
     private Mono<Long> indexMovies(Flux<List<MovieDb>> moviesFlux) {
         return moviesFlux
                 .flatMap(movieBuffer -> Mono.fromCallable(() ->
-                                batchSaveMovies(movieBuffer))
+                                movieBatchSaveTask.batchSave(movieBuffer))
                         .subscribeOn(Schedulers.boundedElastic()))
                 .retry(5)
                 .reduce(Long::sum);
     }
 
 
-    public Long batchSaveMovies(List<MovieDb> movieData) {
-        String sql =
-                "INSERT INTO movies (id, end_year,original_title," +
-                        "primary_title,runtime_minutes,start_year,tconst,title_type,version) " +
-                        "VALUES (?, ?, ?, ?, ?,?,?,?,?)";
-        try (Connection connection = hikariDataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            int counter = 0;
-            for (MovieDb movie : movieData) {
-                statement.clearParameters();
-                statement.setObject(1, movie.getId());
-                statement.setInt(2, movie.getEndYear());
-                statement.setString(3, movie.getOriginalTitle());
-                statement.setString(4, movie.getPrimaryTitle());
-                statement.setInt(5, movie.getRuntimeMinutes());
-                statement.setInt(6, movie.getStartYear());
-                statement.setString(7, movie.getTconst());
-                statement.setString(8, movie.getTitleType());
-                statement.setLong(9, movie.getVersion());
-                statement.addBatch();
-                if ((counter + 1) % PG_BATCH_SIZE == 0 || (counter + 1) == movieData.size()) {
-                    statement.executeBatch();
-                    statement.clearBatch();
-                }
-                counter++;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0L;
-    }
-    @Value("${cygni.elasticWindow}")
-    public Integer elasticWindowSize;
-    private Mono<Long> indexMovieDocuments(Flux<MovieDb> moviesFlux) {
-        return moviesFlux// Splits flux into multiple windows so elastic doesn't choke.
-                .map(movieDb -> modelMapper.map(movieDb, MovieDocument.class))
-                .window(elasticWindowSize)
-                .flatMap(movieDocumentRepository::saveAll)
-                .count();
-    }
+
+
+
 
 }

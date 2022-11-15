@@ -39,7 +39,7 @@ public class IngestDirigentTask {
         actorDocIngestTask.streamToElasticFromJpaAndBlock();
 
         long endTime = Instant.now().toEpochMilli() - startTime;
-        log.info("scheduled task ended, it took {} seconds and {} miliseconds", endTime % 1000, endTime - endTime%1000);
+        log.info("scheduled task ended, it took {} seconds and {} miliseconds", endTime / 1000, endTime%1000);
 
     }
 }

@@ -12,10 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
-public class ActorBatchSaveTask {
-    public static final int PG_BATCH_SIZE = 50;
-    private final HikariDataSource hikariDataSource;
+public class ActorBatchSaveTask extends AbstractBatchSaveTask {
+    public ActorBatchSaveTask(HikariDataSource hikariDataSource) {
+        super(hikariDataSource);
+    }
+    private static final String PRIM_PROF_SQL = """
+            INSERT INTO primary_profession (actor_db_id, primary_profession) VALUES (?, ?)
+                """;
+    private static final String KNOWN_FOR_SQL =
+            """
+INSERT INTO known_for_titles (actor_db_id, known_for_titles)VALUES (?, ?)
+""";
 
     /**
      * This method takes in a list of actors and then batch saves it in the relevant repositories.
@@ -26,18 +33,14 @@ public class ActorBatchSaveTask {
         try (Connection connection = hikariDataSource.getConnection()) {
 
             doBatchSaveActors(actors, connection);
+
             List<AbstractIngestTask.StringUUID> knownFor = new ArrayList<>();
             List<AbstractIngestTask.StringUUID> primaryProf = new ArrayList<>();
 
-            actors.forEach(s -> {
-                s.getKnownForTitles().forEach(known ->
-                        knownFor.add(new AbstractIngestTask.StringUUID(s.getId(), known)));
-                s.getPrimaryProfession().forEach(primary ->
-                        primaryProf.add(new AbstractIngestTask.StringUUID(s.getId(), primary)));
-            });
+            flattenInnerListsandEnrich(actors, knownFor, primaryProf);
 
-            doBatchSaveKnownFor(knownFor, connection);
-            doBatchSavePrimaryProfession(primaryProf, connection);
+            batchSaveStringUUID(knownFor, connection, KNOWN_FOR_SQL);
+            batchSaveStringUUID(primaryProf, connection, PRIM_PROF_SQL);
             toreturn = actors.size();
         } catch (SQLException ignored) {
 
@@ -45,56 +48,13 @@ public class ActorBatchSaveTask {
         return toreturn;
     }
 
-
-    private void doBatchSavePrimaryProfession(List<AbstractIngestTask.StringUUID> knownFor, Connection connection) {
-        String sql =
-                "INSERT INTO primary_profession (actor_db_id, primary_profession) " +
-                        "VALUES (?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            int counter = 0;
-            for (AbstractIngestTask.StringUUID known : knownFor) {
-                statement.clearParameters();
-                statement.setObject(1, known.getId());
-                statement.setString(2, known.getString());
-                statement.addBatch();
-                if ((counter + 1) % PG_BATCH_SIZE == 0 || (counter + 1) == knownFor.size()) {
-                    statement.executeBatch();
-                    statement.clearBatch();
-                }
-                counter++;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void doBatchSaveKnownFor(List<AbstractIngestTask.StringUUID> knownFor, Connection connection) {
-        String sql =
-                "INSERT INTO known_for_titles (actor_db_id, known_for_titles) " +
-                        "VALUES (?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            int counter = 0;
-            for (AbstractIngestTask.StringUUID known : knownFor) {
-                statement.clearParameters();
-                statement.setObject(1, known.getId());
-                statement.setString(2, known.getString());
-
-                statement.addBatch();
-                if ((counter + 1) % PG_BATCH_SIZE == 0 || (counter + 1) == knownFor.size()) {
-                    statement.executeBatch();
-                    statement.clearBatch();
-                }
-                counter++;
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    private void flattenInnerListsandEnrich(List<ActorDb> actors, List<AbstractIngestTask.StringUUID> knownFor, List<AbstractIngestTask.StringUUID> primaryProf) {
+        actors.forEach(actor -> {
+            actor.getKnownForTitles().forEach(known ->
+                    knownFor.add(new AbstractIngestTask.StringUUID(actor.getId(), known)));
+            actor.getPrimaryProfession().forEach(primary ->
+                    primaryProf.add(new AbstractIngestTask.StringUUID(actor.getId(), primary)));
+        });
     }
 
     private void doBatchSaveActors(List<ActorDb> actorData, Connection connection) {
