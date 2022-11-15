@@ -1,0 +1,3 @@
+rootProject.name = 'moviesearch-service'
+include 'moviesearch-component-search'
+include 'moviesearch-component-persistence'

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: movie-search-service
+  datasource:
+    url: jdbc:h2:file:~/test
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+  elasticsearch:
+    uris: localhost:15235
