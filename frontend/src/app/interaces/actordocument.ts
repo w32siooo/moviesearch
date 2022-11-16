@@ -6,5 +6,6 @@ export interface ActorDocument{
       birthYear : number,
       deathYear : number,
       primaryProfession : string[],
-      knownForTitles : string[]
+      knownForTitles : string[],
+      titleMappings : string[]
 }

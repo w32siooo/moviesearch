@@ -11,8 +11,8 @@ import { ActorDocument } from './interaces/actordocument';
 })
 
 export class ActorService {
-  actorCount : string = "http://localhost:8080/api/actors/count";
-  freeSearchUrl : string = "http://localhost:8080/api/actors/freeSearch";
+  actorCount : string = "http://localhost:12934/api/actors/count";
+  freeSearchUrl : string = "http://localhost:12934/api/actors/freeSearch";
 
   constructor(private http: HttpClient) { }
 
@@ -21,6 +21,7 @@ export class ActorService {
   }
 
   searchForActors (toSearch : string) {
+    toSearch = toSearch.trim()
     return this.http.get<ActorDocument[]>(this.freeSearchUrl+"?q="+toSearch)
   }
 }
