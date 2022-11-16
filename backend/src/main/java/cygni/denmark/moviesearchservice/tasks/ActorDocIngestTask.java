@@ -74,8 +74,7 @@ public class ActorDocIngestTask {
                 .onErrorResume(s -> Mono.empty())
                 .count()
                 .block();
-        log.info("Elements also indexed in elastic");
-
+        log.info("actor elements also indexed in elastic");
     }
 
     private Mono<Long> directIndexActorsFlux(Flux<ActorDb> actorsFlux) {

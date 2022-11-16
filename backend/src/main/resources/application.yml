@@ -4,7 +4,7 @@ spring:
     name: movie-search-service
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
     url: jdbc:postgresql://localhost/postgres
@@ -30,8 +30,8 @@ springdoc:
 cygni:
   actorsTsv: /Users/andreas.hansen/Downloads/name.basics.tsv
   moviesTsv: /Users/andreas.hansen/Downloads/title.basics.tsv
-  take: 1000000
-  postgresBufferSize: 100000
+  take: 100000
+  postgresBufferSize: 10000
   elasticWindow: 500
 server:
   port: 12934

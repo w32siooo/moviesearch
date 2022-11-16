@@ -79,6 +79,6 @@ public class MovieDocIngestTask {
         .onErrorResume(s -> Mono.empty())
         .count()
         .block();
-    log.info("Elements also indexed in elastic");
+    log.info("Movie elements also indexed in elastic");
   }
 }
