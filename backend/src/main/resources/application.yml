@@ -30,8 +30,8 @@ springdoc:
 cygni:
   actorsTsv: /Users/andreas.hansen/Downloads/name.basics.tsv
   moviesTsv: /Users/andreas.hansen/Downloads/title.basics.tsv
-  take: 10000
-  postgresBufferSize: 10000
+  take: 1000000
+  postgresBufferSize: 100000
   elasticWindow: 500
 server:
   port: 12934
