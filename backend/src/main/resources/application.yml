@@ -12,9 +12,12 @@ spring:
     password: postgres
     driverClassName: org.postgresql.Driver
     hikari:
-      connectionTimeout:
-        20000
+      connectionTimeout: 10000
       maximum-pool-size: 25
+      auto-commit: true
+      minimum-idle: 5
+      idle-timeout: 600000
+      max-lifetime: 1800000
   elasticsearch:
     uris: localhost:9200
     connection-timeout: 5s
@@ -30,8 +33,8 @@ springdoc:
 cygni:
   actorsTsv: /Users/andreas.hansen/Downloads/name.basics.tsv
   moviesTsv: /Users/andreas.hansen/Downloads/title.basics.tsv
-  take: 100000
-  postgresBufferSize: 10000
+  take: 1000000
+  postgresBufferSize: 100000
   elasticWindow: 500
 server:
-  port: 12934
+  port: 8124

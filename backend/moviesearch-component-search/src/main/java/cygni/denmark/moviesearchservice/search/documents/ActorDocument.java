@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Document(indexName = "actors")
@@ -41,6 +42,9 @@ public class ActorDocument {
 
     @Field(type = FieldType.Auto)
     private List<String> knownForTitles;
+
+    @Field(type = FieldType.Auto)
+    private Timestamp timestamp;
 
 
 }
