@@ -54,25 +54,24 @@ public class MovieDocIngestTask {
 
   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
   public void streamToElasticFromJpaAndBlock() {
-    Flux.using(
+    Flux.defer(
             () ->
-                jdbcTemplate.queryForStream(
-                    postgresToElasticQuery,
-                    (resultSet, rowNum) ->
-                        new MovieDb(
-                            resultSet.getObject(1, UUID.class),
-                            resultSet.getLong(2),
-                            resultSet.getTimestamp(3),
-                            resultSet.getString(4),
-                            resultSet.getString(5),
-                            resultSet.getString(6),
-                            resultSet.getString(7),
-                            resultSet.getInt(8),
-                            resultSet.getInt(9),
-                            resultSet.getInt(10),
-                            Sets.newHashSet(resultSet.getString(10).split(",")))),
-            Flux::fromStream,
-            BaseStream::close)
+                Flux.fromStream(
+                    jdbcTemplate.queryForStream(
+                        postgresToElasticQuery,
+                        (resultSet, rowNum) ->
+                            new MovieDb(
+                                resultSet.getObject(1, UUID.class),
+                                resultSet.getLong(2),
+                                resultSet.getTimestamp(3),
+                                resultSet.getString(4),
+                                resultSet.getString(5),
+                                resultSet.getString(6),
+                                resultSet.getString(7),
+                                resultSet.getInt(8),
+                                resultSet.getInt(9),
+                                resultSet.getInt(10),
+                                Sets.newHashSet(resultSet.getString(10).split(","))))))
         .map(mov -> modelMapper.map(mov, MovieDocument.class))
         .window(elasticWindowSize) // Splits flux into multiple windows so elastic doesn't choke.
         .flatMap(movieDocumentRepository::saveAll, 4)

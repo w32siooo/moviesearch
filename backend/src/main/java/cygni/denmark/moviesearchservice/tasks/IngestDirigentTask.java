@@ -30,25 +30,20 @@ public class IngestDirigentTask {
 
   private final ActorDocIngestTask actorDocIngestTask;
 
-
   @Scheduled(fixedDelay = Long.MAX_VALUE, initialDelay = 1000)
   public void scheduleFixedRateWithInitialDelayTask() {
     log.info("scheduled task started");
     long startTime = Instant.now().toEpochMilli();
-    cleanElasticService
-        .cleanRepos()
-       // .then(actorDbIngestTask.run())
+    actorDbIngestTask
+        .run()
         .doOnSuccess(inserted -> log.info("{} Actor elements indexed in postgres ", inserted))
-       // .then(movieDbIngestTask.run())
+        .then(movieDbIngestTask.run())
         .doOnSuccess(inserted -> log.info("{} Movie elements indexed in postgres ", inserted))
         .block();
 
-      var res = actorDocIngestTask.streamToElasticFromJpaAndBlock();
+     actorDocIngestTask.streamToElasticFromJpaAndBlock();
 
-
-      log.info("actor elements also indexed in elastic" + res.getTimestamp());
-
-     //movieDocIngestTask.streamToElasticFromJpaAndBlock();
+    movieDocIngestTask.streamToElasticFromJpaAndBlock();
 
     long endTime = Instant.now().toEpochMilli() - startTime;
     log.info(
