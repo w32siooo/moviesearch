@@ -8,6 +8,7 @@ import cygni.denmark.moviesearchservice.search.services.MovieSearchService;
 import cygni.denmark.moviesearchservice.services.CleanElasticService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.time.Instant;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "cygni", name = "ingest", havingValue = "true")
 public class IngestDirigentTask {
 
   private final ActorDbIngestTask actorDbIngestTask;

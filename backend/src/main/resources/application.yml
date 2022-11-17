@@ -36,5 +36,6 @@ cygni:
   take: 1000000
   postgresBufferSize: 100000
   elasticWindow: 500
+  ingest : true
 server:
   port: 8124

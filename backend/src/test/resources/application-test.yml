@@ -8,3 +8,5 @@ spring:
     driverClassName: org.h2.Driver
   elasticsearch:
     uris: localhost:15235
+cygni:
+  ingest: false

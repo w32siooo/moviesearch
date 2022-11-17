@@ -15,8 +15,8 @@ class ActortRepositoryIntegrationTestSpec extends IntegrationTestSupport {
 
     void "test that saving in postgres works as expected"() {
         given:
-        ActorDb actorDb = new ActorDb(UUID.randomUUID(), 0L, null, "ncosnt",
-                "name", 1992, 0, ["hello"], ["jkes"])
+        ActorDb actorDb = new ActorDb(id: UUID.randomUUID())
+
         when:
         actorRepository.save(actorDb)
 

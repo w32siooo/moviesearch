@@ -88,6 +88,7 @@ project(':moviesearch-component-persistence') {
     }
 }
 
+bootBuildImage.dependsOn(build)
 
 test {
     finalizedBy jacocoTestReport // report is always generated after tests run

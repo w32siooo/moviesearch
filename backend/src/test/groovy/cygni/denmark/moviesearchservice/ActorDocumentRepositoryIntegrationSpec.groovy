@@ -4,6 +4,8 @@ import cygni.denmark.moviesearchservice.search.documents.ActorDocument
 import cygni.denmark.moviesearchservice.search.repositories.ActorDocumentRepository
 import org.springframework.beans.factory.annotation.Autowired
 
+import java.sql.Timestamp
+
 
 class ActorDocumentRepositoryIntegrationSpec extends IntegrationTestSupport {
 
@@ -13,7 +15,7 @@ class ActorDocumentRepositoryIntegrationSpec extends IntegrationTestSupport {
     void "test search repo"() {
         given: "Document is created"
         ActorDocument actorDoc = new ActorDocument("1", 0L, "se",
-                "mo", 1123, 1234, ["123", "sdafj"], ["123", "swfsf"])
+                "mo", 1123, 1234, ["123", "sdafj"], ["123", "swfsf"],null)
 
         when: "Entity is saved"
         ActorDocument response = searchRepository.save(actorDoc).block()
