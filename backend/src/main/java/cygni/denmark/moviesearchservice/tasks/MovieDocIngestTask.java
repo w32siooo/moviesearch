@@ -71,7 +71,7 @@ public class MovieDocIngestTask {
                                 resultSet.getInt(8),
                                 resultSet.getInt(9),
                                 resultSet.getInt(10),
-                                Sets.newHashSet(resultSet.getString(10).split(","))))))
+                                Sets.newHashSet(resultSet.getString(11).split(","))))))
         .map(mov -> modelMapper.map(mov, MovieDocument.class))
         .window(elasticWindowSize) // Splits flux into multiple windows so elastic doesn't choke.
         .flatMap(movieDocumentRepository::saveAll, 4)

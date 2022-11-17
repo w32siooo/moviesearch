@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { observable, Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
 import { ActorCount } from './interaces/actor';
 import { ActorDocument } from './interaces/actordocument';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
@@ -11,17 +10,15 @@ import { ActorDocument } from './interaces/actordocument';
 })
 
 export class ActorService {
-  actorCount : string = "http://localhost:12934/api/actors/count";
-  freeSearchUrl : string = "http://localhost:12934/api/actors/freeSearch";
 
   constructor(private http: HttpClient) { }
 
   getActorCount (){
-    return this.http.get<ActorCount>(this.actorCount)
+    return this.http.get<ActorCount>(environment.baseUrl+"/actors/count")
   }
 
   searchForActors (toSearch : string) {
     toSearch = toSearch.trim()
-    return this.http.get<ActorDocument[]>(this.freeSearchUrl+"?q="+toSearch)
+    return this.http.get<ActorDocument[]>(environment.baseUrl+"/actors/freeSearch?q="+toSearch)
   }
 }
