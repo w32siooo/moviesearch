@@ -41,42 +41,34 @@ public class ActorDocIngestTask {
             FROM actors
                      LEFT JOIN known_for_titles kft on actors.id = kft.actor_db_id
                      LEFT JOIN primary_profession pp on actors.id = pp.actor_db_id
-            WHERE timestamp > '%s'
-            GROUP BY id, timestamp
-            ORDER BY timestamp
-            LIMIT %s
+            GROUP BY id
             """;
 
   @Value("${cygni.elasticWindow}")
   public Integer elasticWindowSize;
 
   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-  public Timestamp streamToElasticFromJpaAndBlock(Integer amount, String timeStamp) {
-    var res =
-        Flux.using(
-                () ->
-                    jdbcTemplate.queryForStream(
-                        String.format(postgresToElasticQuery,timeStamp,amount),
-                        (resultSet, rowNum) ->
-                            new ActorDb(
-                                resultSet.getObject(1, UUID.class),
-                                resultSet.getLong(2),
-                                resultSet.getTimestamp(3),
-                                resultSet.getString(4),
-                                resultSet.getString(5),
-                                resultSet.getInt(6),
-                                resultSet.getInt(7),
-                                Sets.newHashSet(resultSet.getString(8).split(",")),
-                                Sets.newHashSet(resultSet.getString(9).split(",")))),
-                Flux::fromStream,
-                BaseStream::close)
+  public ActorDocument streamToElasticFromJpaAndBlock() {
+
+    return  Flux.defer(()->Flux.fromStream(jdbcTemplate.queryForStream(
+                            postgresToElasticQuery,
+                            (resultSet, rowNum) ->
+                                    new ActorDb(
+                                            resultSet.getObject(1, UUID.class),
+                                            resultSet.getLong(2),
+                                            resultSet.getTimestamp(3),
+                                            resultSet.getString(4),
+                                            resultSet.getString(5),
+                                            resultSet.getInt(6),
+                                            resultSet.getInt(7),
+                                            Sets.newHashSet(resultSet.getString(8).split(",")),
+                                            Sets.newHashSet(resultSet.getString(9).split(","))))))
             .map(actorDb -> modelMapper.map(actorDb, ActorDocument.class))
             .window(
                 elasticWindowSize) // Splits flux into multiple windows so elastic doesn't choke.
             .flatMap(actorDocumentRepository::saveAll, 4)
             .onErrorResume(s -> Mono.empty())
             .blockLast();
-    return res.getTimestamp();
   }
 
   private Mono<Long> directIndexActorsFlux(Flux<ActorDb> actorsFlux) {

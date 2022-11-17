@@ -30,7 +30,6 @@ public class IngestDirigentTask {
 
   private final ActorDocIngestTask actorDocIngestTask;
 
-  private boolean ingestToElastic = false;
 
   @Scheduled(fixedDelay = Long.MAX_VALUE, initialDelay = 1000)
   public void scheduleFixedRateWithInitialDelayTask() {
@@ -43,24 +42,14 @@ public class IngestDirigentTask {
        // .then(movieDbIngestTask.run())
         .doOnSuccess(inserted -> log.info("{} Movie elements indexed in postgres ", inserted))
         .block();
-    actorDocIngestTask.streamToElasticFromJpaAndBlock(1000000, "2022-11-16 15:22:34.093");
 
-    if (ingestToElastic) {
-      var res =
-          actorDocIngestTask.streamToElasticFromJpaAndBlock(100000, "2022-11-16 15:22:34.093");
-      for (int i = 0; i < 8; i++) {
-        log.info("progress: "+"=".repeat(i));
-        var newRes = actorDocIngestTask.streamToElasticFromJpaAndBlock(100000, res.toString());
-        if (newRes == null) {
-          actorDocIngestTask.streamToElasticFromJpaAndBlock(100000, res.toString());
-        } else {
-          res = newRes;
-        }
-      }
-      log.info("actor elements also indexed in elastic" + res);
+      var res = actorDocIngestTask.streamToElasticFromJpaAndBlock();
 
-     // movieDocIngestTask.streamToElasticFromJpaAndBlock();
-    }
+
+      log.info("actor elements also indexed in elastic" + res.getTimestamp());
+
+     //movieDocIngestTask.streamToElasticFromJpaAndBlock();
+
     long endTime = Instant.now().toEpochMilli() - startTime;
     log.info(
         "scheduled task ended, it took {} seconds and {} miliseconds",
