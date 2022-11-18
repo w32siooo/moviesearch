@@ -1,4 +1,4 @@
-package cygni.denmark.moviesearchservice.controllers;
+package cygni.denmark.moviesearchservice.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

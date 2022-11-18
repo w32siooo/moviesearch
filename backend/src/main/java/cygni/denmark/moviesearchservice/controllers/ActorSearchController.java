@@ -1,8 +1,8 @@
 package cygni.denmark.moviesearchservice.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cygni.denmark.moviesearchservice.dtos.ActorDocumentDto;
 import cygni.denmark.moviesearchservice.dtos.CountDTO;
-import cygni.denmark.moviesearchservice.persistence.repositories.MovieDb;
 import cygni.denmark.moviesearchservice.persistence.services.MovieService;
 import cygni.denmark.moviesearchservice.search.documents.ActorDocument;
 import cygni.denmark.moviesearchservice.search.models.Actor;

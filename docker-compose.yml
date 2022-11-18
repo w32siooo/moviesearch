@@ -1,9 +1,22 @@
 version: "3.9"
 services:
+  moviesearch:
+    container_name: moviesearch
+    image: "moviesearch-service:latest"
+    ports:
+      - 8124:8124
+    depends_on:
+      - elastic
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_ELASTICSEARCH_URIS=elasticsearch:9200
   elastic:
     container_name: elasticsearch
     image: "elasticsearch:7.17.6"
-    ports:
+    ports:  
       - 9200:9200
     environment:
       - discovery.type=single-node
@@ -11,8 +24,6 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - cluster.name=docker-cluster
       - xpack.security.enabled=false
-    expose:
-      - 9200
     volumes:
       - elastic_data:/elasticsearch-data
   postgres:
@@ -26,8 +37,6 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/postgres-data
-    expose:
-      - 5432
   kibana:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:7.17.6
@@ -41,3 +50,4 @@ services:
 volumes:
   postgres_data :
   elastic_data :
+

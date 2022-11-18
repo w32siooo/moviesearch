@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ActorCount } from './interaces/actor';
-import { ActorDocument } from './interaces/actordocument';
+import { ActorCount } from './interfaces/actor';
+import { ActorDocument } from './interfaces/actordocument';
 import { environment } from 'src/environments/environment';
 
 

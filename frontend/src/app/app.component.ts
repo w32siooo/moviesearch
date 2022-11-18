@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActorService } from './actor.service';
-import { ActorDocument } from './interaces/actordocument';
+import { ActorDocument } from './interfaces/actordocument';
 
 @Component({
   selector: 'app-root',
