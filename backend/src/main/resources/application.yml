@@ -20,6 +20,8 @@ spring:
   elasticsearch:
     uris: ${SPRING_ELASTICSEARCH_URIS:127.0.0.1:9200}
     connection-timeout: 5s
+    password: ${SPRING_ELASTICSEARCH_PASSWORD}
+    username: elastic
   codec:
     max-in-memory-size: 10MB
 springdoc:
@@ -32,9 +34,9 @@ springdoc:
 cygni:
   actorsTsv: /Users/andreas.hansen/Downloads/name.basics.tsv
   moviesTsv: /Users/andreas.hansen/Downloads/title.basics.tsv
-  take: 1000000
-  postgresBufferSize: 100000
+  take: ${CYGNI_TAKE:10000}
+  postgresBufferSize: ${CYGNI_POSTGES_BUFFER_SIZE:10000}
   elasticWindow: 500
-  ingest : true
+  ingest : ${CYGNI_INGEST:true}
 server:
   port: 8124

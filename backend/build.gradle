@@ -90,7 +90,7 @@ project(':moviesearch-component-persistence') {
 
 
 tasks.named("bootBuildImage") {
-    imageName = "${project.name}"
+    imageName = "msse"
 }
 
 test {

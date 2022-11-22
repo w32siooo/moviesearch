@@ -9,19 +9,7 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsea
 import org.springframework.data.elasticsearch.client.reactive.ReactiveRestClients;
 
 @ComponentScan
-@Configuration
 public class MovieSearchAutoConfig {
-
-    @Value("${spring.elasticsearch.uris}")
-    private String elasticHost;
-
-    @Bean
-    public ReactiveElasticsearchClient reactiveElasticsearchClient() {
-        final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-                .connectedTo(elasticHost)
-                .build();
-        return ReactiveRestClients.create(clientConfiguration);
-    }
 
 
 }
