@@ -21,7 +21,7 @@ spring:
     uris: ${SPRING_ELASTICSEARCH_URIS}
     connection-timeout: 5s
     password: ${SPRING_ELASTICSEARCH_PASSWORD}
-    username: elastic
+    username: ${SPRING_ELASTICSEARCH_USERNAME:elastic}
   codec:
     max-in-memory-size: 10MB
 springdoc:
@@ -32,8 +32,8 @@ springdoc:
     path: /api-docs
     enabled: true
 cygni:
-  actorsTsv: /Users/andreas.hansen/Downloads/name.basics.tsv
-  moviesTsv: /Users/andreas.hansen/Downloads/title.basics.tsv
+  actorsTsv: ${CYGNI_ACTORSTSV}
+  moviesTsv: ${CYGNI_MOVIESTSV}
   take: ${CYGNI_TAKE:10000}
   postgresBufferSize: ${CYGNI_POSTGES_BUFFER_SIZE:10000}
   elasticWindow: 500
