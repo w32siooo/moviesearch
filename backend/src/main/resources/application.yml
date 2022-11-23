@@ -6,9 +6,9 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://127.0.0.1:5432/postgres}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driverClassName: org.postgresql.Driver
     hikari:
       connectionTimeout: 10000
@@ -18,7 +18,7 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
   elasticsearch:
-    uris: ${SPRING_ELASTICSEARCH_URIS:127.0.0.1:9200}
+    uris: ${SPRING_ELASTICSEARCH_URIS}
     connection-timeout: 5s
     password: ${SPRING_ELASTICSEARCH_PASSWORD}
     username: elastic
