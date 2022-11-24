@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.27.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: moviesearch
+  name: moviesearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: moviesearch
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.27.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: moviesearch
+    spec:
+      containers:
+        - env:
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/postgres
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_ELASTICSEARCH_PASSWORD
+              value: "123"
+            - name: SPRING_ELASTICSEARCH_URIS
+              value: elasticsearch:9200
+          image: msse:latest
+          name: moviesearch
+          ports:
+            - containerPort: 8124
+          resources: {}
+      restartPolicy: Always
+status: {}

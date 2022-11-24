@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 services:
   moviesearch:
     container_name: moviesearch
@@ -28,7 +28,6 @@ services:
       - ELASTIC_PASSWORD=123
     volumes:
       - elastic_data:/elasticsearch-data
-    platform: linux/arm64
   postgres:
     container_name: postgres
     image: "postgres:bullseye"

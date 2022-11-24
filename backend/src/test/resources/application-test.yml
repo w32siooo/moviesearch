@@ -10,3 +10,5 @@ spring:
     uris: localhost:15235
 cygni:
   ingest: false
+  actorsTsv: classpath::testdata/namebasics.tgv
+  moviesTsv: classpath::testdata/namebasics.tgv
