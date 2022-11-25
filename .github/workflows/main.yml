@@ -17,9 +17,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 16.x
+      - name: cd into folder
+        run : cd frontend
       - name: install dependencies
         run: npm install
       - name: build
         run: npm run build
       - name: aws deploy
-        run: BUILD_DIRECTORY=build BUCKET_NAME=mss-cygni AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}  npm run deploy-aws
+        run: BUILD_DIRECTORY=frontend/dist BUCKET_NAME=mss-cygni AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}  npm run deploy-aws
