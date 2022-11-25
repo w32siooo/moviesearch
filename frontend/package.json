@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy-aws": "node aws-upload.js"
+    "deploy-aws": "node aws-deploy.js"
   },
   "private": true,
   "dependencies": {
