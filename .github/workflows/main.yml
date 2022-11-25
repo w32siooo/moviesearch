@@ -1,4 +1,4 @@
-name:  CI/CD
+name:  Build_and_deploy_to_s3
 
 on:
   push:
