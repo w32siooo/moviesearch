@@ -34,4 +34,5 @@ jobs:
         working-directory: ./frontend
         run: npm run build
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync ./frontend/dist/ s3://mss-cygni  
+        working-directory: ./frontend/dist/moviesearch-service-frontend
+        run: aws s3 sync . s3://mss-cygni  
