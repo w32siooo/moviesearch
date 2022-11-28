@@ -19,7 +19,6 @@ export class MovieSearchComponent implements OnInit {
   ngOnInit(): void {
     this.movieService.getActorCount().subscribe((sub) =>
     this.actorCount = sub.count)
-    this.search("action")
   }
 
   search(q: string): void {

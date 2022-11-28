@@ -20,7 +20,6 @@ export class ActorSearchComponent implements OnInit {
   ngOnInit(): void {
     this.actorService.getActorCount().subscribe((sub) =>
       this.actorCount = sub.count)
-    this.search("robert")
   }
 
   search(q: string): void {
