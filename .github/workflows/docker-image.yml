@@ -10,13 +10,28 @@ on:
     paths:
       - backend/**    
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1    
     - uses: actions/checkout@v3
+    - uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 17
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    - name: Execute Gradle build
+      run: ./gradlew build
     - name: Build the Docker image
       run: docker build . --file Dockerfile --platform linux/amd64 --tag mss:$(date +%s)
       working-directory: ./backend
+    - name: tag
+      run: docker tag mss:$(date +%s) 098631701204.dkr.ecr.eu-central-1.amazonaws.com/mss:$(date +%s)
+    - name: tag
+      run: docker push 098631701204.dkr.ecr.eu-central-1.amazonaws.com/mss:$(date +%s)
