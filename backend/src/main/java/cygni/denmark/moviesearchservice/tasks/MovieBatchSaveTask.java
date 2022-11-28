@@ -2,7 +2,6 @@ package cygni.denmark.moviesearchservice.tasks;
 
 import com.zaxxer.hikari.HikariDataSource;
 import cygni.denmark.moviesearchservice.persistence.repositories.MovieDb;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -60,7 +59,8 @@ public class MovieBatchSaveTask extends AbstractBatchSaveTask {
     }
   }
 
-  private void bindToPreparedStatement(PreparedStatement statement, MovieDb movie) throws SQLException {
+  private void bindToPreparedStatement(PreparedStatement statement, MovieDb movie)
+      throws SQLException {
     statement.setObject(1, movie.getId());
     statement.setInt(2, movie.getEndYear());
     statement.setString(
@@ -68,7 +68,9 @@ public class MovieBatchSaveTask extends AbstractBatchSaveTask {
         movie.getOriginalTitle().length() > 30
             ? movie.getOriginalTitle().substring(0, 30)
             : movie.getOriginalTitle());
-    statement.setString(4, movie.getPrimaryTitle().length() > 30
+    statement.setString(
+        4,
+        movie.getPrimaryTitle().length() > 30
             ? movie.getPrimaryTitle().substring(0, 30)
             : movie.getPrimaryTitle());
     statement.setInt(5, movie.getRuntimeMinutes());

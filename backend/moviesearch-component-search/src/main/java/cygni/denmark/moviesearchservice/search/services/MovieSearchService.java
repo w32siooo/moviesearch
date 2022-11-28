@@ -26,55 +26,55 @@ import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 @Slf4j
 public class MovieSearchService {
 
-    private final ReactiveElasticsearchClient reactiveElasticsearchClient;
+  private final ReactiveElasticsearchClient reactiveElasticsearchClient;
 
-    private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-    private final MovieDocumentRepository movieDocumentRepository;
+  private final MovieDocumentRepository movieDocumentRepository;
 
-    public Mono<Long> count() {
-        return movieDocumentRepository.count();
-    }
+  public Mono<Long> count() {
+    return movieDocumentRepository.count();
+  }
 
+  public Flux<MovieDocument> freeSearchMovies(String searchValue) {
+    SearchRequest searchRequest =
+        searchRequest("movies"); // Without arguments runs against all indices
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
-    public Flux<MovieDocument> freeSearchMovies(String searchValue) {
-        SearchRequest searchRequest = searchRequest("movies"); // Without arguments runs against all indices
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    NativeSearchQuery searchQuery =
+        new NativeSearchQueryBuilder()
+            .withQuery(
+                multiMatchQuery(searchValue)
+                    .field("primaryTitle")
+                    .field("originalTitle")
+                    .field("titleType")
+                    .field("genres")
+                    .type(MultiMatchQueryBuilder.Type.BEST_FIELDS))
+            .build();
 
-        NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(multiMatchQuery(searchValue)
-                        .field("primaryTitle")
-                        .field("originalTitle")
-                        .field("titleType")
-                        .field("genres")
-                        .type(MultiMatchQueryBuilder.Type.BEST_FIELDS))
-                .build();
+    sourceBuilder.query(searchQuery.getQuery());
+    searchRequest.source(sourceBuilder);
 
-        sourceBuilder.query(searchQuery.getQuery());
-        searchRequest.source(sourceBuilder);
+    return reactiveElasticsearchClient
+        .search(searchRequest)
+        .map(hit -> objectMapper.convertValue(hit.getSourceAsMap(), MovieDocument.class))
+        .switchIfEmpty(Mono.error(new ResourceNotFoundException("found nothing")));
+  }
 
-        return reactiveElasticsearchClient.search(searchRequest)
-                .map(hit ->
-                        objectMapper.convertValue(hit.getSourceAsMap(), MovieDocument.class))
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("found nothing")));
-    }
+  public Flux<MovieDocument> searchMovies(Movie searchValue) {
 
+    SearchRequest searchRequest =
+        searchRequest("actors"); // Without arguments runs against all indices
+    SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
-    public Flux<MovieDocument> searchMovies(Movie searchValue) {
+    if (searchValue.getGenres() != null)
+      sourceBuilder.query(QueryBuilders.matchQuery("genres", searchValue.getGenres()));
 
-        SearchRequest searchRequest = searchRequest("actors"); // Without arguments runs against all indices
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+    searchRequest.source(sourceBuilder);
 
-        if (searchValue.getGenres() != null)
-            sourceBuilder.query(QueryBuilders.matchQuery("genres", searchValue.getGenres()));
-
-
-        searchRequest.source(sourceBuilder);
-
-        return reactiveElasticsearchClient.search(searchRequest)
-                .map(hit ->
-                        objectMapper.convertValue(hit.getSourceAsMap(), MovieDocument.class))
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("found nothing")));
-
-    }
+    return reactiveElasticsearchClient
+        .search(searchRequest)
+        .map(hit -> objectMapper.convertValue(hit.getSourceAsMap(), MovieDocument.class))
+        .switchIfEmpty(Mono.error(new ResourceNotFoundException("found nothing")));
+  }
 }

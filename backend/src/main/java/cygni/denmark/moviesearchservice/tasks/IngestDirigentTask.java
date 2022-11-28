@@ -1,11 +1,9 @@
 package cygni.denmark.moviesearchservice.tasks;
 
-import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.pool.HikariPool;
 import cygni.denmark.moviesearchservice.persistence.repositories.ActorRepository;
+import cygni.denmark.moviesearchservice.persistence.repositories.MovieRepository;
 import cygni.denmark.moviesearchservice.search.services.ActorSearchService;
 import cygni.denmark.moviesearchservice.search.services.MovieSearchService;
-import cygni.denmark.moviesearchservice.services.CleanElasticService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,6 +28,8 @@ public class IngestDirigentTask {
 
   private final ActorRepository actorRepository;
 
+  private final MovieRepository movieRepository;
+
   private final MovieDocIngestTask movieDocIngestTask;
 
   private final ActorDocIngestTask actorDocIngestTask;
@@ -38,17 +38,25 @@ public class IngestDirigentTask {
   public void scheduleFixedRateWithInitialDelayTask() {
     log.info("scheduled task started");
     long startTime = Instant.now().toEpochMilli();
-    if (actorRepository.count() == 0) {
+    if (actorRepository.count() < movieDbIngestTask.take) {
       actorDbIngestTask
           .run()
           .doOnSuccess(inserted -> log.info("{} Actor elements indexed in postgres ", inserted))
-          .then(movieDbIngestTask.run())
+          .block();
+    }
+
+    if (movieRepository.count() < movieDbIngestTask.take) {
+      movieDbIngestTask
+          .run()
           .doOnSuccess(inserted -> log.info("{} Movie elements indexed in postgres ", inserted))
           .block();
     }
-    if (actorSearchService.count().block() == 0) actorDocIngestTask.streamToElasticFromJpaAndBlock();
 
-    if (movieSearchService.count().block() == 0) movieDocIngestTask.streamToElasticFromJpaAndBlock();
+    if (actorSearchService.count().block() == 0)
+      actorDocIngestTask.streamToElasticFromJpaAndBlock();
+
+    if (movieSearchService.count().block() == 0)
+      movieDocIngestTask.streamToElasticFromJpaAndBlock();
 
     long endTime = Instant.now().toEpochMilli() - startTime;
     log.info(

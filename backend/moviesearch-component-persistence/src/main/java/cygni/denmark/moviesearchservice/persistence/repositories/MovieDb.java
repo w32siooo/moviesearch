@@ -17,42 +17,38 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "movies")
 public class MovieDb {
-    @Id
-    private UUID id;
-    @Version
-    private Long version;
-    private Timestamp timestamp;
+  @Id private UUID id;
+  @Version private Long version;
+  private Timestamp timestamp;
 
-    private String tconst;
+  private String tconst;
 
-    private String titleType;
+  private String titleType;
 
-    private String primaryTitle;
+  private String primaryTitle;
 
-    private String originalTitle;
+  private String originalTitle;
 
-    private Integer startYear;
+  private Integer startYear;
 
-    private Integer endYear;
+  private Integer endYear;
 
-    private Integer runtimeMinutes;
-    @ElementCollection
-    @CollectionTable(name = "genres")
-    private Set<String> genres;
+  private Integer runtimeMinutes;
 
-    public void bindToPreparedStatement(PreparedStatement statement) throws SQLException {
-        statement.setObject(1, id);
-        statement.setInt(2, endYear);
-        statement.setString(
-                3,
-                originalTitle.length() > 30
-                        ? originalTitle.substring(0, 30)
-                        : originalTitle);
-        statement.setString(4, primaryTitle);
-        statement.setInt(5, runtimeMinutes);
-        statement.setInt(6, startYear);
-        statement.setString(7, tconst);
-        statement.setString(8, titleType);
-        statement.setLong(9, version);
-    }
+  @ElementCollection
+  @CollectionTable(name = "genres")
+  private Set<String> genres;
+
+  public void bindToPreparedStatement(PreparedStatement statement) throws SQLException {
+    statement.setObject(1, id);
+    statement.setInt(2, endYear);
+    statement.setString(
+        3, originalTitle.length() > 30 ? originalTitle.substring(0, 30) : originalTitle);
+    statement.setString(4, primaryTitle);
+    statement.setInt(5, runtimeMinutes);
+    statement.setInt(6, startYear);
+    statement.setString(7, tconst);
+    statement.setString(8, titleType);
+    statement.setLong(9, version);
+  }
 }

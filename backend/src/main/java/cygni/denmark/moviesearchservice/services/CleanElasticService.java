@@ -9,12 +9,12 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 public class CleanElasticService {
-    private final ActorDocumentRepository actorDocumentRepository;
+  private final ActorDocumentRepository actorDocumentRepository;
 
-    private final MovieDocumentRepository movieDocumentRepository;
+  private final MovieDocumentRepository movieDocumentRepository;
 
-    public Mono<Void> cleanRepos() {
-        return Mono.zip(movieDocumentRepository.deleteAll(),
-                actorDocumentRepository.deleteAll()).then();
-    }
+  public Mono<Void> cleanRepos() {
+    return Mono.zip(movieDocumentRepository.deleteAll(), actorDocumentRepository.deleteAll())
+        .then();
+  }
 }

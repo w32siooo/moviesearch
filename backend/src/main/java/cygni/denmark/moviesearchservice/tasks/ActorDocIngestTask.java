@@ -14,11 +14,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
-import java.sql.Timestamp;
 import java.util.UUID;
-import java.util.stream.BaseStream;
 
 @Component
 @RequiredArgsConstructor
@@ -51,25 +48,27 @@ public class ActorDocIngestTask {
   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
   public ActorDocument streamToElasticFromJpaAndBlock() {
 
-    return  Flux.defer(()->Flux.fromStream(jdbcTemplate.queryForStream(
-                            postgresToElasticQuery,
-                            (resultSet, rowNum) ->
-                                    new ActorDb(
-                                            resultSet.getObject(1, UUID.class),
-                                            resultSet.getLong(2),
-                                            resultSet.getTimestamp(3),
-                                            resultSet.getString(4),
-                                            resultSet.getString(5),
-                                            resultSet.getInt(6),
-                                            resultSet.getInt(7),
-                                            Sets.newHashSet(resultSet.getString(8).split(",")),
-                                            Sets.newHashSet(resultSet.getString(9).split(","))))))
-            .map(actorDb -> modelMapper.map(actorDb, ActorDocument.class))
-            .window(
-                elasticWindowSize) // Splits flux into multiple windows so elastic doesn't choke.
-            .flatMap(actorDocumentRepository::saveAll, 4)
-            .onErrorResume(s -> Mono.empty())
-            .blockLast();
+    return Flux.defer(
+            () ->
+                Flux.fromStream(
+                    jdbcTemplate.queryForStream(
+                        postgresToElasticQuery,
+                        (resultSet, rowNum) ->
+                            new ActorDb(
+                                resultSet.getObject(1, UUID.class),
+                                resultSet.getLong(2),
+                                resultSet.getTimestamp(3),
+                                resultSet.getString(4),
+                                resultSet.getString(5),
+                                resultSet.getInt(6),
+                                resultSet.getInt(7),
+                                Sets.newHashSet(resultSet.getString(8).split(",")),
+                                Sets.newHashSet(resultSet.getString(9).split(","))))))
+        .map(actorDb -> modelMapper.map(actorDb, ActorDocument.class))
+        .window(elasticWindowSize) // Splits flux into multiple windows so elastic doesn't choke.
+        .flatMap(actorDocumentRepository::saveAll, 4)
+        .onErrorResume(s -> Mono.empty())
+        .blockLast();
   }
 
   private Mono<Long> directIndexActorsFlux(Flux<ActorDb> actorsFlux) {

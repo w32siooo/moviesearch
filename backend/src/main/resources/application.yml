@@ -37,13 +37,6 @@ cygni:
   take: ${CYGNI_TAKE:10000}
   postgresBufferSize: ${CYGNI_POSTGES_BUFFER_SIZE:10000}
   elasticWindow: 500
-  ingest : ${CYGNI_INGEST:true}
+  ingest: ${CYGNI_INGEST:true}
 server:
   port: 8124
-  ssl:
-    key-store: ${SERVER_SSL_KEYSTORE:classpath:keystore/aadh.p12}
-    key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
-    key-alias : aadh
-    enabled : true
-    trust-store: ${SERVER_SSL_TRUSTSTORE:classpath:keystore/aadh.p12}
-    trust-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}

@@ -1,6 +1,5 @@
 package cygni.denmark.moviesearchservice.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import cygni.denmark.moviesearchservice.dtos.ActorDocumentDto;
 import cygni.denmark.moviesearchservice.dtos.CountDTO;
 import cygni.denmark.moviesearchservice.persistence.services.MovieService;
@@ -30,8 +29,6 @@ public class ActorSearchController {
 
   private final MovieService movieService;
 
-  private final ObjectMapper objectMapper;
-
   @GetMapping(value = "", produces = "application/json")
   public Mono<ResponseEntity<List<ActorDocument>>> findActors(
       @ModelAttribute ActorSeaerchQuery actorSeaerchQuery) {
@@ -57,7 +54,7 @@ public class ActorSearchController {
                         Flux.fromIterable(actorDoc.getKnownForTitles())
                             .flatMap(
                                 tconst -> // map all titles
-                                    Mono.zip(
+                                Mono.zip(
                                         Mono.fromCallable(
                                                 () -> movieService.findMovieTitleByTConst(tconst))
                                             .subscribeOn(Schedulers.boundedElastic()),

@@ -11,22 +11,22 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Movie {
-    private UUID id;
-    private String tconst;
+  private UUID id;
+  private String tconst;
 
-    private String titleType;
+  private String titleType;
 
-    private String primaryTitle;
+  private String primaryTitle;
 
-    private String originalTitle;
+  private String originalTitle;
 
-    private Boolean isAdult;
+  private Boolean isAdult;
 
-    private Integer startYear;
+  private Integer startYear;
 
-    private Integer endYear;
+  private Integer endYear;
 
-    private Integer runtimeMinutes;
+  private Integer runtimeMinutes;
 
-    private List<String> genres;
+  private List<String> genres;
 }

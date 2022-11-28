@@ -7,6 +7,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan
 @Configuration
 @EnableJpaRepositories
-public class MovieSearchPersistenceAutoconfig {
-
-}
+public class MovieSearchPersistenceAutoconfig {}

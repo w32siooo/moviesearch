@@ -17,34 +17,32 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActorDocument {
-    @Id
-    @Field(type = FieldType.Keyword)
-    private String id;
+  @Id
+  @Field(type = FieldType.Keyword)
+  private String id;
 
-    @Version
-    @Field(type = FieldType.Long)
-    private Long version;
+  @Version
+  @Field(type = FieldType.Long)
+  private Long version;
 
-    @Field(type = FieldType.Text)
-    private String nconst;
+  @Field(type = FieldType.Text)
+  private String nconst;
 
-    @Field(type = FieldType.Text)
-    private String primaryName;
+  @Field(type = FieldType.Text)
+  private String primaryName;
 
-    @Field(type = FieldType.Integer)
-    private Integer birthYear;
+  @Field(type = FieldType.Integer)
+  private Integer birthYear;
 
-    @Field(type = FieldType.Integer)
-    private Integer deathYear;
+  @Field(type = FieldType.Integer)
+  private Integer deathYear;
 
-    @Field(type = FieldType.Auto)
-    private List<String> primaryProfession;
+  @Field(type = FieldType.Auto)
+  private List<String> primaryProfession;
 
-    @Field(type = FieldType.Auto)
-    private List<String> knownForTitles;
+  @Field(type = FieldType.Auto)
+  private List<String> knownForTitles;
 
-    @Field(type = FieldType.Auto)
-    private Timestamp timestamp;
-
-
+  @Field(type = FieldType.Auto)
+  private Timestamp timestamp;
 }

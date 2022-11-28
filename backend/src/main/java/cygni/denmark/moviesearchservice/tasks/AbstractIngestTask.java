@@ -13,30 +13,31 @@ import java.util.UUID;
 import java.util.stream.BaseStream;
 
 public abstract class AbstractIngestTask {
-    @Value("${cygni.take}")
-    public Integer take;
-    @Value("${cygni.postgresBufferSize}")
-    public Integer PG_BUFFER_SIZE;
-    protected Flux<String> getLines(String path) {
-        return Flux.using(
-                () -> Files.lines(Path.of(path), StandardCharsets.UTF_8),
-                Flux::fromStream,
-                BaseStream::close
-        );
-    }
+  @Value("${cygni.take}")
+  public Integer take;
 
-    @Getter
-    protected static class StringUUID {
-        private final UUID id;
-        private final String string;
+  @Value("${cygni.postgresBufferSize}")
+  public Integer PG_BUFFER_SIZE;
 
-        public StringUUID(UUID id, String known) {
-            this.id = id;
-            this.string = known;
-        }
-    }
+  protected Flux<String> getLines(String path) {
+    return Flux.using(
+        () -> Files.lines(Path.of(path), StandardCharsets.UTF_8),
+        Flux::fromStream,
+        BaseStream::close);
+  }
 
-    protected Mono<UUID> reactiveUUIDGenerator() {
-        return Mono.fromCallable(UUID::randomUUID).subscribeOn(Schedulers.boundedElastic());
+  @Getter
+  protected static class StringUUID {
+    private final UUID id;
+    private final String string;
+
+    public StringUUID(UUID id, String known) {
+      this.id = id;
+      this.string = known;
     }
+  }
+
+  protected Mono<UUID> reactiveUUIDGenerator() {
+    return Mono.fromCallable(UUID::randomUUID).subscribeOn(Schedulers.boundedElastic());
+  }
 }

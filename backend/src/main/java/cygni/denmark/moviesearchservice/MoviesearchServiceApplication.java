@@ -14,14 +14,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class MoviesearchServiceApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(MoviesearchServiceApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(MoviesearchServiceApplication.class, args);
+  }
 
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
-
-
+  @Bean
+  public ModelMapper modelMapper() {
+    return new ModelMapper();
+  }
 }

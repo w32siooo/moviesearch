@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class MovieService {
 
-    private final MovieRepository movieRepository;
+  private final MovieRepository movieRepository;
 
-    public String findMovieTitleByTConst(String tConst){
-        var mov = movieRepository.findByTconst(tConst);
-        if(mov == null){
-            return tConst;
-        }
-        return mov.getOriginalTitle();
+  public String findMovieTitleByTConst(String tConst) {
+    var mov = movieRepository.findByTconst(tConst);
+    if (mov == null) {
+      return tConst;
     }
+    return mov.getOriginalTitle();
+  }
 }

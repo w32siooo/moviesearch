@@ -16,19 +16,19 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "actors")
 public class ActorDb {
-    @Id
-    private UUID id;
-    @Version
-    private Long version;
-    private Timestamp timestamp;
-    private String nconst;
-    private String primaryName;
-    private Integer birthYear;
-    private Integer deathYear;
-    @ElementCollection
-    @CollectionTable(name = "known_for_titles")
-    private Set<String> knownForTitles = new HashSet<>();
-    @ElementCollection
-    @CollectionTable(name = "primary_profession")
-    private Set<String> primaryProfession = new HashSet<>();
+  @Id private UUID id;
+  @Version private Long version;
+  private Timestamp timestamp;
+  private String nconst;
+  private String primaryName;
+  private Integer birthYear;
+  private Integer deathYear;
+
+  @ElementCollection
+  @CollectionTable(name = "known_for_titles")
+  private Set<String> knownForTitles = new HashSet<>();
+
+  @ElementCollection
+  @CollectionTable(name = "primary_profession")
+  private Set<String> primaryProfession = new HashSet<>();
 }

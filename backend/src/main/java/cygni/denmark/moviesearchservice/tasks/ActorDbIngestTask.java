@@ -20,52 +20,47 @@ import java.util.List;
 @Slf4j
 public class ActorDbIngestTask extends AbstractIngestTask {
 
-    private final ActorBatchSaveTask actorBatchSaveTask;
+  private final ActorBatchSaveTask actorBatchSaveTask;
 
-    @Value("${cygni.actorsTsv}")
-    public String NAME_BASICS_TSV_PATH;
+  @Value("${cygni.actorsTsv}")
+  public String NAME_BASICS_TSV_PATH;
 
+  /**
+   * Parses the TSV file and splits it up into buffers of lists. These get sent to the batch save
+   * task component.
+   */
+  public Mono<Long> run() {
+    log.info("Data ingestion of actor file started, requested indexing of {} elements", take);
 
-/**
- * Parses the TSV file and splits it up into buffers of lists. These get sent to the batch save task component.
- */
+    return indexActorDbs(
+        getLines(NAME_BASICS_TSV_PATH)
+            .skip(1)
+            .take(take) // Because we are testing, limit the amount of rows.
+            .map(s -> s.replaceAll("\\\\N", "0000"))
+            .map(s -> s.split("\t"))
+            .flatMap(actors -> reactiveUUIDGenerator().map(uuid -> Tuples.of(actors, uuid)))
+            .map(
+                data ->
+                    new ActorDb(
+                        data.getT2(),
+                        0L,
+                        new Timestamp(new Date().getTime()),
+                        data.getT1()[0],
+                        data.getT1()[1],
+                        Integer.parseInt(data.getT1()[2]),
+                        Integer.parseInt(data.getT1()[3]),
+                        Sets.newHashSet(data.getT1()[5].split(",")),
+                        Sets.newHashSet(data.getT1()[4].split(","))))
+            .buffer(PG_BUFFER_SIZE));
+  }
 
-    public Mono<Long> run() {
-        log.info("Data ingestion of actor file started, requested indexing of {} elements",take);
-
-       return indexActorDbs(getLines(NAME_BASICS_TSV_PATH)
-                .skip(1)
-                .take(take) // Because we are testing, limit the amount of rows.
-                .map(s -> s.replaceAll("\\\\N", "0000"))
-                .map(s -> s.split("\t"))
-                .flatMap(actors -> reactiveUUIDGenerator()
-                        .map(uuid -> Tuples.of(actors, uuid)))
-                .map(data ->
-                        new ActorDb(data.getT2(),
-                                0L,
-                                new Timestamp(new Date().getTime()),
-                                data.getT1()[0],
-                                data.getT1()[1],
-                                Integer.parseInt(data.getT1()[2]),
-                                Integer.parseInt(data.getT1()[3]),
-                                Sets.newHashSet(data.getT1()[5].split(",")),
-                                Sets.newHashSet(data.getT1()[4].split(",")))
-                )
-               .buffer(PG_BUFFER_SIZE)
-       );
-
-    }
-
-
-
-    private Mono<Long> indexActorDbs(Flux<List<ActorDb>> actorsFlux) {
-        return actorsFlux
-                .flatMap(actorBuffer -> Mono.fromCallable(() ->
-                                actorBatchSaveTask.batchSave(actorBuffer))
-                        .subscribeOn(Schedulers.boundedElastic()))
-                .retry(5)
-                .reduce(Long::sum);
-    }
-
-
+  private Mono<Long> indexActorDbs(Flux<List<ActorDb>> actorsFlux) {
+    return actorsFlux
+        .flatMap(
+            actorBuffer ->
+                Mono.fromCallable(() -> actorBatchSaveTask.batchSave(actorBuffer))
+                    .subscribeOn(Schedulers.boundedElastic()))
+        .retry(5)
+        .reduce(Long::sum);
+  }
 }

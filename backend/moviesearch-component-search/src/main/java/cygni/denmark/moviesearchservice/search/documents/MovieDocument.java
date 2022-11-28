@@ -16,35 +16,35 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MovieDocument {
-    @Id
-    @Field(type = FieldType.Keyword)
-    private String id;
+  @Id
+  @Field(type = FieldType.Keyword)
+  private String id;
 
-    @Version
-    @Field(type = FieldType.Long)
-    private Long version;
+  @Version
+  @Field(type = FieldType.Long)
+  private Long version;
 
-    @Field(type = FieldType.Text)
-    private String tconst;
+  @Field(type = FieldType.Text)
+  private String tconst;
 
-    @Field(type = FieldType.Text)
-    private String titleType;
+  @Field(type = FieldType.Text)
+  private String titleType;
 
-    @Field(type = FieldType.Text)
-    private String primaryTitle;
+  @Field(type = FieldType.Text)
+  private String primaryTitle;
 
-    @Field(type = FieldType.Text)
-    private String originalTitle;
+  @Field(type = FieldType.Text)
+  private String originalTitle;
 
-    @Field(type = FieldType.Integer)
-    private Integer startYear;
+  @Field(type = FieldType.Integer)
+  private Integer startYear;
 
-    @Field(type = FieldType.Integer)
-    private Integer endYear;
+  @Field(type = FieldType.Integer)
+  private Integer endYear;
 
-    @Field(type = FieldType.Integer)
-    private Integer runtimeMinutes;
+  @Field(type = FieldType.Integer)
+  private Integer runtimeMinutes;
 
-    @Field(type = FieldType.Auto)
-    private List<String> genres;
+  @Field(type = FieldType.Auto)
+  private List<String> genres;
 }
