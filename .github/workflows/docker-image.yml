@@ -28,6 +28,7 @@ jobs:
       uses: gradle/gradle-build-action@v2
     - name: Execute Gradle build
       run: ./gradlew build
+      working-direction: ./backend
     - name: Build the Docker image
       run: docker build . --file Dockerfile --platform linux/amd64 --tag mss:$(date +%s)
       working-directory: ./backend
