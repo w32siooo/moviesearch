@@ -11,11 +11,17 @@ on:
       - main
     paths:
       - frontend/**
-      
+
 jobs: 
   primary:
     runs-on: ubuntu-latest
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ matrix.node-version}}
         uses: actions/setup-node@v1
@@ -27,6 +33,5 @@ jobs:
       - name: build
         working-directory: ./frontend
         run: npm run build
-      - name: aws deploy
-        working-directory: ./frontend
-        run: BUILD_DIRECTORY=dist BUCKET_NAME=mss-cygni AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}  npm run deploy-aws
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync ./dist/ s3://mss-cygni  
