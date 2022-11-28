@@ -32,6 +32,8 @@ jobs:
     - name: Execute Gradle build
       working-directory: ./backend
       run: ./gradlew build
+      env:
+        SERVER_SSL_KEYSTORE_PASSWORD: ${{ secrets.SERVER_SSL_KEYSTORE_PASSWORD }}
     - name: Build, tag, and push image to Amazon ECR
       working-directory: ./backend
       env:
