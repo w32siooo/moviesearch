@@ -27,11 +27,11 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
     - name: Execute Gradle build
-      run: ./gradlew build
-      working-direction: ./backend
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --platform linux/amd64 --tag mss:$(date +%s)
       working-directory: ./backend
+      run: ./gradlew build
+    - name: Build the Docker image
+      working-directory: ./backend
+      run: docker build . --file Dockerfile --platform linux/amd64 --tag mss:$(date +%s)
     - name: tag
       run: docker tag mss:$(date +%s) 098631701204.dkr.ecr.eu-central-1.amazonaws.com/mss:$(date +%s)
     - name: tag
