@@ -1,7 +1,7 @@
 package cygni.denmark.moviesearchservice.search.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cygni.denmark.moviesearchservice.search.documents.ActorDocument;
+import cygni.denmark.moviesearchservice.search.documents.MovieDocument;
 import cygni.denmark.moviesearchservice.search.models.Movie;
 import cygni.denmark.moviesearchservice.search.repositories.MovieDocumentRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +37,15 @@ public class MovieSearchService {
     }
 
 
-    public Flux<ActorDocument> freeSearchMovies(String searchValue) {
+    public Flux<MovieDocument> freeSearchMovies(String searchValue) {
         SearchRequest searchRequest = searchRequest("movies"); // Without arguments runs against all indices
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
                 .withQuery(multiMatchQuery(searchValue)
+                        .field("primaryTitle")
+                        .field("originalTitle")
+                        .field("titleType")
                         .field("genres")
                         .type(MultiMatchQueryBuilder.Type.BEST_FIELDS))
                 .build();
@@ -52,12 +55,12 @@ public class MovieSearchService {
 
         return reactiveElasticsearchClient.search(searchRequest)
                 .map(hit ->
-                        objectMapper.convertValue(hit.getSourceAsMap(), ActorDocument.class))
+                        objectMapper.convertValue(hit.getSourceAsMap(), MovieDocument.class))
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("found nothing")));
     }
 
 
-    public Flux<ActorDocument> searchMovies(Movie searchValue) {
+    public Flux<MovieDocument> searchMovies(Movie searchValue) {
 
         SearchRequest searchRequest = searchRequest("actors"); // Without arguments runs against all indices
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -70,7 +73,7 @@ public class MovieSearchService {
 
         return reactiveElasticsearchClient.search(searchRequest)
                 .map(hit ->
-                        objectMapper.convertValue(hit.getSourceAsMap(), ActorDocument.class))
+                        objectMapper.convertValue(hit.getSourceAsMap(), MovieDocument.class))
                 .switchIfEmpty(Mono.error(new ResourceNotFoundException("found nothing")));
 
     }

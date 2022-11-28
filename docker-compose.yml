@@ -14,6 +14,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_ELASTICSEARCH_URIS=elasticsearch:9200
       - SPRING_ELASTICSEARCH_PASSWORD=123
+      - CYGNI_ACTORSTSV=/Users/andreas.hansen/downloads/name.basics.tsv
+      - CYGNI_MOVIESTSV=/Users/andreas.hansen/downloads/title.basics.tsv      
   elastic:
     container_name: elasticsearch
     image: "elasticsearch:7.17.7"

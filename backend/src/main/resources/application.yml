@@ -6,9 +6,9 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driverClassName: org.postgresql.Driver
     hikari:
       connectionTimeout: 10000
@@ -18,9 +18,9 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
   elasticsearch:
-    uris: ${SPRING_ELASTICSEARCH_URIS}
+    uris: ${SPRING_ELASTICSEARCH_URIS:127.0.0.1:9200}
     connection-timeout: 5s
-    password: ${SPRING_ELASTICSEARCH_PASSWORD}
+    password: ${SPRING_ELASTICSEARCH_PASSWORD:123}
     username: ${SPRING_ELASTICSEARCH_USERNAME:elastic}
   codec:
     max-in-memory-size: 10MB
@@ -32,8 +32,8 @@ springdoc:
     path: /api-docs
     enabled: true
 cygni:
-  actorsTsv: ${CYGNI_ACTORSTSV}
-  moviesTsv: ${CYGNI_MOVIESTSV}
+  actorsTsv: ${CYGNI_ACTORSTSV:/Users/andreas.hansen/downloads/name.basics.tsv}
+  moviesTsv: ${CYGNI_MOVIESTSV:/Users/andreas.hansen/downloads/title.basics.tsv}
   take: ${CYGNI_TAKE:10000}
   postgresBufferSize: ${CYGNI_POSTGES_BUFFER_SIZE:10000}
   elasticWindow: 500

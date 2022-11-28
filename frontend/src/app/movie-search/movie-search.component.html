@@ -1,0 +1,25 @@
+<p>There are {{actorCount}} movies stored in elastic, search away!
+</p>
+<input type="text" id="searchInput" name="searchInput" [(ngModel)]="searchInput">
+<button (click)="search(searchInput)">Search</button>
+<div *ngIf="errorMsg">
+    {{errorMsg}}
+    secret
+</div>
+
+<mat-card class="searchres" *ngFor="let movie of movies">
+    <mat-card-header>
+        <mat-card-title>{{movie.originalTitle}}</mat-card-title>
+        <mat-card-subtitle><a href="https://www.imdb.com/name/{{movie.tconst}}">Imdb page</a></mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+
+        <p><b> Known for titles</b> : <span *ngFor="let genre of movie.genres| keyvalue">
+            <a href="https://www.imdb.com/title/{{genre.key}}">{{genre.value}} </a></span></p>
+      
+
+            <span *ngIf="movie.startYear"><b>Startyear</b> : {{movie.startYear}} </span>
+            <span *ngIf="movie.endYear!=0"><b>Endyear</b> : {{movie.endYear}}</span>
+    </mat-card-content>
+
+</mat-card>

@@ -6,18 +6,24 @@
     {{errorMsg}}
     secret
 </div>
-    <div class="searchres" *ngFor="let actor of actors">
-        <b>Birthyear</b> : {{actor.birthYear}} 
-        <br>
-        <b>Deathyear</b> : {{actor.deathYear}} 
-        <br>
-        <b> Known for titles</b> : <span *ngFor="let know of actor.titleMappings | keyvalue">
-            <a href="https://www.imdb.com/title/{{know.key}}">{{know.value}} </a></span>
-        <br>
-        <b>imdb page : </b> <a href="https://www.imdb.com/name/{{actor.nconst}}">Imdb actor page</a>        
-        <br>
-        <b>Primaryname :</b> {{actor.primaryName}}
-        <br>
-        <b>Primary professions :</b> <span *ngFor="let prof of actor.primaryProfession">
-            {{prof}}</span>
-    </div>
+<mat-card class="searchres" *ngFor="let actor of actors">
+    <mat-card-header>
+        <mat-card-title>{{actor.primaryName}}</mat-card-title>
+        <mat-card-subtitle><a href="https://www.imdb.com/name/{{actor.nconst}}">Imdb page</a></mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+
+        <p><b> Known for titles</b> : <span *ngFor="let know of actor.titleMappings | keyvalue">
+            <a href="https://www.imdb.com/title/{{know.key}}">{{know.value}} </a></span></p>
+            
+            <p *ngIf="actor.primaryProfession"> <b>Primary professions :</b> 
+                <span *ngFor="let prof of actor.primaryProfession">
+            {{prof}}</span></p>
+
+            <span *ngIf="actor.birthYear!=0"><b>Born</b> : {{actor.birthYear}} </span>
+            <span *ngIf="actor.deathYear!=0"><b>Died</b> : {{actor.deathYear}}</span>
+    </mat-card-content>
+
+
+
+</mat-card>

@@ -2,8 +2,16 @@
 body {
     font-family: Helvetica, Arial, sans-serif;
     width:80%;
+    height: 100%;
     margin-left:auto;
     margin-right:auto;
+    font-family: "Roboto rev=2";
+    background-color: lightgray;
+  }
+  html{
+    height: 100%;
+    font-family: "Roboto rev=2";
+
   }
   
   .btn-wrapper {

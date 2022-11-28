@@ -2,6 +2,7 @@ package cygni.denmark.moviesearchservice.controllers;
 
 import cygni.denmark.moviesearchservice.dtos.CountDTO;
 import cygni.denmark.moviesearchservice.search.documents.ActorDocument;
+import cygni.denmark.moviesearchservice.search.documents.MovieDocument;
 import cygni.denmark.moviesearchservice.search.models.Movie;
 import cygni.denmark.moviesearchservice.search.services.MovieSearchService;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,13 @@ import java.util.List;
 @RequestMapping("/api/movies")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin
 public class MovieSearchController {
     private final MovieSearchService movieSearchService;
     private final ModelMapper modelMapper;
 
     @GetMapping(value = "", produces = "application/json")
-    public Mono<ResponseEntity<List<ActorDocument>>> findMovies(@ModelAttribute ActorSeaerchQuery actorSeaerchQuery) {
+    public Mono<ResponseEntity<List<MovieDocument>>> findMovies(@ModelAttribute ActorSeaerchQuery actorSeaerchQuery) {
         return movieSearchService.searchMovies(modelMapper.map(actorSeaerchQuery, Movie.class))
                 .collectList().map(ResponseEntity::ok);
     }
@@ -32,9 +34,11 @@ public class MovieSearchController {
         return movieSearchService.count().map(count -> ResponseEntity.ok(new CountDTO(count)));
     }
 
-    @GetMapping(value = "free", produces = "application/json")
-    public Mono<ResponseEntity<List<ActorDocument>>> findMoviesFree(@RequestParam String q) {
-        return movieSearchService.freeSearchMovies(q).collectList().map(ResponseEntity::ok);
+    @GetMapping(value = "freeSearch", produces = "application/json")
+    public Mono<ResponseEntity<List<MovieDocument>>> findMoviesFree(@RequestParam String q) {
+        return movieSearchService.freeSearchMovies(q)
+                .collectList()
+                .map(ResponseEntity::ok);
     }
 
 }
