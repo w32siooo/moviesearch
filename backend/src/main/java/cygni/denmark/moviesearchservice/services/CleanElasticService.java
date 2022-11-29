@@ -17,4 +17,13 @@ public class CleanElasticService {
     return Mono.zip(movieDocumentRepository.deleteAll(), actorDocumentRepository.deleteAll())
         .then();
   }
+  public Mono<Void> cleanMovieRepo() {
+    return movieDocumentRepository.deleteAll()
+            .then();
+  }
+
+  public Mono<Void> cleanActorRepo() {
+    return actorDocumentRepository.deleteAll()
+            .then();
+  }
 }

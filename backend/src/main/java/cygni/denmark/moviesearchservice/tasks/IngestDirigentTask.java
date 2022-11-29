@@ -4,6 +4,7 @@ import cygni.denmark.moviesearchservice.persistence.repositories.ActorRepository
 import cygni.denmark.moviesearchservice.persistence.repositories.MovieRepository;
 import cygni.denmark.moviesearchservice.search.services.ActorSearchService;
 import cygni.denmark.moviesearchservice.search.services.MovieSearchService;
+import cygni.denmark.moviesearchservice.services.CleanElasticService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,6 +35,8 @@ public class IngestDirigentTask {
 
   private final ActorDocIngestTask actorDocIngestTask;
 
+  private final CleanElasticService cleanElasticService;
+
   @Scheduled(fixedDelay = Long.MAX_VALUE, initialDelay = 1000)
   public void scheduleFixedRateWithInitialDelayTask() {
     log.info("scheduled task started");
@@ -53,9 +56,11 @@ public class IngestDirigentTask {
     }
 
     if (actorSearchService.count().block() < movieDbIngestTask.take) {
+      cleanElasticService.cleanActorRepo().block();
       actorDocIngestTask.streamToElasticFromJpaAndBlock();
     }
     if (movieSearchService.count().block() < movieDbIngestTask.take) {
+      cleanElasticService.cleanMovieRepo().block();
       movieDocIngestTask.streamToElasticFromJpaAndBlock();
     }
     long endTime = Instant.now().toEpochMilli() - startTime;
