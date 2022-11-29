@@ -10,11 +10,11 @@
 <mat-card class="searchres" *ngFor="let movie of movies">
     <mat-card-header>
         <mat-card-title>{{movie.originalTitle}}</mat-card-title>
-        <mat-card-subtitle><a href="https://www.imdb.com/name/{{movie.tconst}}">Imdb page</a></mat-card-subtitle>
+        <mat-card-subtitle><a href="https://www.imdb.com/title/{{movie.tconst}}">Imdb page</a></mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
 
-        <p><b> Known for titles</b> : <span *ngFor="let genre of movie.genres| keyvalue">
+        <p><b> Genres</b> : <span *ngFor="let genre of movie.genres| keyvalue">
             <a href="https://www.imdb.com/title/{{genre.key}}">{{genre.value}} </a></span></p>
       
 
