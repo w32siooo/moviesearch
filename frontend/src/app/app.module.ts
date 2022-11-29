@@ -12,7 +12,7 @@ import { TopMenuComponent } from './top-menu/top-menu.component';
 import {MatCardModule} from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule, MatList, MatListModule, MatProgressBarModule } from '@angular/material';
+import { MatDividerModule, MatFormFieldModule, MatList, MatListModule, MatProgressBarModule } from '@angular/material';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,6 +30,7 @@ import { MatDividerModule, MatList, MatListModule, MatProgressBarModule } from '
     MatDividerModule,
     MatProgressBarModule,
     MatListModule,
+    MatFormFieldModule,
   MatButtonModule 
   ],
   providers: [  {provide: LocationStrategy, useClass: HashLocationStrategy}  ],

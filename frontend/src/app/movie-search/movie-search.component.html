@@ -1,7 +1,15 @@
 <p>There are {{actorCount}} movies stored in elastic, search away!
 </p>
-<input type="text" id="searchInput" name="searchInput" [(ngModel)]="searchInput">
-<button (click)="search(searchInput)">Search</button>
+  <mat-form-field hintLabel="Max 10 characters" appearance="fill">
+    <mat-label>Enter some input</mat-label>
+
+<input matInput #input placeholder="Ex. Dr. No" id="searchInput" name="searchInput" [(ngModel)]="searchInput">
+<mat-hint align="end">{{input.value.length}}/10</mat-hint>
+
+</mat-form-field>
+
+<button mat-button (click)="search(searchInput)">Search</button>
+
 <div *ngIf="errorMsg">
     {{errorMsg}}
     secret
