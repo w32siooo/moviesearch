@@ -38,5 +38,6 @@ cygni:
   postgresBufferSize: ${CYGNI_POSTGES_BUFFER_SIZE:10000}
   elasticWindow: 500
   ingest: ${CYGNI_INGEST:true}
+  secret: ${CYGNI_SECRET}
 server:
   port: 8124
