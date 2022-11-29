@@ -40,3 +40,10 @@ cygni:
   ingest: ${CYGNI_INGEST:true}
 server:
   port: 8124
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: ${SERVER_SSL_KEYSTORE:classpath:cert.p12}
+    key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD:123}
+    protocol:  TLS
+    enabled-protocols: TLSv1.2
