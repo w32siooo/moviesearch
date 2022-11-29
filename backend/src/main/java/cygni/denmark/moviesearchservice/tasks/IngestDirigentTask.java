@@ -52,12 +52,12 @@ public class IngestDirigentTask {
           .block();
     }
 
-    if (actorSearchService.count().block() == 0)
+    if (actorSearchService.count().block() < movieDbIngestTask.take) {
       actorDocIngestTask.streamToElasticFromJpaAndBlock();
-
-    if (movieSearchService.count().block() == 0)
+    }
+    if (movieSearchService.count().block() < movieDbIngestTask.take) {
       movieDocIngestTask.streamToElasticFromJpaAndBlock();
-
+    }
     long endTime = Instant.now().toEpochMilli() - startTime;
     log.info(
         "scheduled task ended, it took {} seconds and {} miliseconds",
