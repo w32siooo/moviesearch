@@ -1,34 +1,57 @@
-<p>There are {{actorCount}} actors stored in elastic, search away!
-</p>
+<p>There are {{ actorCount }} actors stored in elastic, search away!</p>
 <mat-form-field hintLabel="Max 10 characters" appearance="fill">
-    <mat-label>Enter some input</mat-label>
+  <mat-label>Enter some input</mat-label>
 
-<input matInput #input placeholder="Ex. Sean Connery" type="text" id="searchInput" name="searchInput" [(ngModel)]="searchInput">
+  <input
+    matInput
+    #input
+    placeholder="Ex. Sean Connery"
+    type="text"
+    id="searchInput"
+    name="searchInput"
+    [(ngModel)]="searchInput"
+  />
 </mat-form-field>
 <button mat-button color="primary" (click)="search(searchInput)">Search</button>
 
 <div *ngIf="errorMsg">
-    {{errorMsg}}
-    secret
+  {{ errorMsg }}
+  secret
 </div>
-<mat-card class="searchres" *ngFor="let actor of actors">
-    <mat-card-header>
-        <mat-card-title>{{actor.primaryName}}</mat-card-title>
-        <mat-card-subtitle><a href="https://www.imdb.com/name/{{actor.nconst}}">Imdb page</a></mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-
-        <p><b> Known for titles</b> : <span *ngFor="let know of actor.titleMappings | keyvalue">
-            <a href="https://www.imdb.com/title/{{know.key}}">{{know.value}} </a></span></p>
-            
-            <p *ngIf="actor.primaryProfession"> <b>Primary professions :</b> 
-                <span *ngFor="let prof of actor.primaryProfession">
-            {{prof}}</span></p>
-
-            <span *ngIf="actor.birthYear!=0"><b>Born</b> : {{actor.birthYear}} </span>
-            <span *ngIf="actor.deathYear!=0"><b>Died</b> : {{actor.deathYear}}</span>
+<div *ngIf="actors">
+  <div *ngFor="let actor of actors">
+    <mat-card class="card">
+      <mat-card-header>
+        <mat-card-title>{{ actor.primaryName }}</mat-card-title>
+        <mat-card-subtitle
+          ><p *ngIf="actor.primaryProfession">
+            <span *ngFor="let prof of actor.primaryProfession">
+              {{ prof }}</span
+            >
+          </p></mat-card-subtitle
+        >
+        <span *ngIf="actor.birthYear != 0"
+        ><b>Born</b>  {{ actor.birthYear }}
+      </span>
+      <span *ngIf="actor.deathYear != 0"
+        ><b>Died</b>  {{ actor.deathYear }}</span
+      >
+      </mat-card-header>
+      <mat-card-content>
+        <b> Known for titles</b> :
+        <span *ngFor="let know of actor.titleMappings | keyvalue">
+          <a href="https://www.imdb.com/title/{{ know.key }}"
+            >{{ know.value }}
+          </a></span
+        >
+        
     </mat-card-content>
-
-
-
-</mat-card>
+      <mat-card-actions>
+        <button mat-button><a href="https://www.imdb.com/name/{{ actor.nconst }}"
+            >Imdb page</a
+        ></button>
+        <button mat-button>SHARE</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

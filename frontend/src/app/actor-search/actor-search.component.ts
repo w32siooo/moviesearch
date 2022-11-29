@@ -12,7 +12,8 @@ export class ActorSearchComponent implements OnInit {
 
   actorCount: number = 0;
   searchInput: string = '';
-  actors: ActorDocument[] = [];
+  actors: Array<ActorDocument> = []
+
   errorMsg: string = '';
 
   constructor(private actorService: ActorService) { }
