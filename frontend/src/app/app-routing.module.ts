@@ -10,8 +10,8 @@ const routes: Routes = [];
     RouterModule.forRoot([
       { path: 'movies', component: MovieSearchComponent },
       { path: 'actors', component: ActorSearchComponent },
-      { path: '**', redirectTo: 'login' }
-    ])
+      { path: '**', redirectTo: 'movies' }
+    ],{ useHash: true })
   ],
   exports: [RouterModule]
 })
