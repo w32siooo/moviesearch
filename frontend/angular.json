@@ -90,8 +90,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/themes.scss"
+              "src/styles.css"
             ],
             "scripts": []
           }

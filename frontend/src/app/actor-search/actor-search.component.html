@@ -3,9 +3,9 @@
 <mat-form-field hintLabel="Max 10 characters" appearance="fill">
     <mat-label>Enter some input</mat-label>
 
-<input matInput #input placeholder="Ex. Robert De Niro" type="text" id="searchInput" name="searchInput" [(ngModel)]="searchInput">
+<input matInput #input placeholder="Ex. Sean Connery" type="text" id="searchInput" name="searchInput" [(ngModel)]="searchInput">
 </mat-form-field>
-<button mat-button (click)="search(searchInput)">Search</button>
+<button mat-button color="primary" (click)="search(searchInput)">Search</button>
 
 <div *ngIf="errorMsg">
     {{errorMsg}}
