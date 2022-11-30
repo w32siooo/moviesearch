@@ -39,11 +39,3 @@ jobs:
       - name: Deploy static site to second S3 bucket
         working-directory: ./frontend/dist/moviesearch-service-frontend
         run: aws s3 sync . s3://andreas-hansen.xyz      
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@1
-        with:
-          apiToken: ${{ secrets.CF_PAGES_TOKEN}}
-          accountId: a5a9478b9771b03c8330d3e8d19777c9
-          projectName: andreas-hansen.xyz
-          directory: ./frontend/dist/moviesearch-service-frontend
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
