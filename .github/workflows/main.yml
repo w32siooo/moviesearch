@@ -39,3 +39,8 @@ jobs:
       - name: Deploy static site to second S3 bucket
         working-directory: ./frontend/dist/moviesearch-service-frontend
         run: aws s3 sync . s3://andreas-hansen.xyz      
+      - name: Publish to cf
+        uses: cloudflare/wrangler-action@2.0.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: a5a9478b9771b03c8330d3e8d19777c9
