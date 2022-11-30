@@ -44,9 +44,9 @@ server:
     enabled: true
     key-store-type: PKCS12
     key-store: ${SERVER_SSL_KEYSTORE:classpath:cert-prod.p12}
-    key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
+    key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD:sdh2318fr3}
     protocol:  TLS
     enabled-protocols: TLSv1.2
     client-auth: need
-    trust-store: ${SERVER_SSL_TRUSTSTORE:classpath:trust.p12}
-    trust-store-password: ${SERVER_SSL_TRUSTSTORE_PASSWORD}
+    trust-store: ${SERVER_SSL_TRUSTSTORE:classpath:serverTrustStore.p12}
+    trust-store-password: ${SERVER_SSL_TRUSTSTORE_PASSWORD:gtnj32fac}
