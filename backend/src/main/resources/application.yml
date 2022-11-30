@@ -47,3 +47,6 @@ server:
     key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD}
     protocol:  TLS
     enabled-protocols: TLSv1.2
+    client-auth: need
+    trust-store: ${SERVER_SSL_TRUSTSTORE:classpath:trust.p12}
+    trust-store-password: ${SERVER_SSL_TRUSTSTORE_PASSWORD}
