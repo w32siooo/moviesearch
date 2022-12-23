@@ -35,7 +35,7 @@ jobs:
         run: npm run build
       - name: Deploy static site to S3 bucket
         working-directory: ./frontend/dist/moviesearch-service-frontend
-        run: aws s3 sync . s3://www.andreas-hansen.xyz  
+        run: aws s3 sync . s3://www.mss.w32siooo.com  
       - name: Deploy static site to second S3 bucket
         working-directory: ./frontend/dist/moviesearch-service-frontend
-        run: aws s3 sync . s3://andreas-hansen.xyz      
+        run: aws s3 sync . s3://mss.w32siooo.com      
