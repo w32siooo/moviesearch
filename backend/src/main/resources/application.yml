@@ -6,7 +6,7 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://127.0.0.1:5432/postgres}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driverClassName: org.postgresql.Driver
@@ -40,13 +40,3 @@ cygni:
   ingest: ${CYGNI_INGEST:true}
 server:
   port: 8124
-  ssl:
-    enabled: true
-    key-store-type: PKCS12
-    key-store: ${SERVER_SSL_KEYSTORE:classpath:cert-prod.p12}
-    key-store-password: ${SERVER_SSL_KEYSTORE_PASSWORD:sdh2318fr3}
-    protocol:  TLS
-    enabled-protocols: TLSv1.2
-    client-auth: none
-    trust-store: ${SERVER_SSL_TRUSTSTORE:classpath:serverTrustStore.p12}
-    trust-store-password: ${SERVER_SSL_TRUSTSTORE_PASSWORD:gtnj32fac}
