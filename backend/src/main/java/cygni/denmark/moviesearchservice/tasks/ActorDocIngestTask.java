@@ -48,7 +48,7 @@ public class ActorDocIngestTask {
   public Integer elasticWindowSize;
 
   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-  public Mono<Long> streamToElasticFromJpaAndBlock() {
+  public Mono<Long> run() {
     log.info("this ran");
 
     return Flux.defer(

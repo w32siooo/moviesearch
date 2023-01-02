@@ -34,7 +34,7 @@ springdoc:
 cygni:
   actorsTsv: ${CYGNI_ACTORSTSV:/Users/andreas.hansen/downloads/name.basics.tsv}
   moviesTsv: ${CYGNI_MOVIESTSV:/Users/andreas.hansen/downloads/title.basics.tsv}
-  take: ${CYGNI_TAKE:1000000000}
+  take: ${CYGNI_TAKE:10000}
   postgresBufferSize: ${CYGNI_POSTGES_BUFFER_SIZE:10000}
   elasticWindow: 500
   ingest: ${CYGNI_INGEST:true}

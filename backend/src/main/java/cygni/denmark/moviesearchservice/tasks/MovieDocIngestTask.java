@@ -1,7 +1,6 @@
 package cygni.denmark.moviesearchservice.tasks;
 
 import cygni.denmark.moviesearchservice.persistence.repositories.MovieDb;
-import cygni.denmark.moviesearchservice.search.documents.ActorDocument;
 import cygni.denmark.moviesearchservice.search.documents.MovieDocument;
 import cygni.denmark.moviesearchservice.search.repositories.MovieDocumentRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,7 @@ public class MovieDocIngestTask {
   public Integer elasticWindowSize;
 
   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-  public Mono<Long> streamToElasticFromJpaAndBlock() {
+  public Mono<Long> run() {
     return Flux.defer(
             () ->
                 Flux.fromStream(
