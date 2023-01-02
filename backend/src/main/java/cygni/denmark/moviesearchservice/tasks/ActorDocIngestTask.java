@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Component
@@ -46,7 +48,8 @@ public class ActorDocIngestTask {
   public Integer elasticWindowSize;
 
   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-  public ActorDocument streamToElasticFromJpaAndBlock() {
+  public Mono<Long> streamToElasticFromJpaAndBlock() {
+    log.info("this ran");
 
     return Flux.defer(
             () ->
@@ -55,7 +58,7 @@ public class ActorDocIngestTask {
                         postgresToElasticQuery,
                         (resultSet, rowNum) ->
                             new ActorDb(
-                                resultSet.getObject(1, UUID.class),
+                                UUID.fromString(resultSet.getString(1)),
                                 resultSet.getLong(2),
                                 resultSet.getTimestamp(3),
                                 resultSet.getString(4),
@@ -66,9 +69,17 @@ public class ActorDocIngestTask {
                                 Sets.newHashSet(resultSet.getString(9).split(","))))))
         .map(actorDb -> modelMapper.map(actorDb, ActorDocument.class))
         .window(elasticWindowSize) // Splits flux into multiple windows so elastic doesn't choke.
-        .flatMap(actorDocumentRepository::saveAll, 4)
-        .onErrorResume(s -> Mono.empty())
-        .blockLast();
+        .flatMap(this::saveAllWithRetry, 4)
+        .count();
+  }
+
+  private Flux<ActorDocument> saveAllWithRetry(Flux<ActorDocument> actorDocuments) {
+    return actorDocumentRepository.saveAll(actorDocuments)
+      .retryWhen(Retry.backoff(3, Duration.ofSeconds(60)))
+      .onErrorResume(e -> {
+        log.error("Error while saving to elastic", e);
+        return Mono.empty();
+      });
   }
 
   private Mono<Long> directIndexActorsFlux(Flux<ActorDb> actorsFlux) {

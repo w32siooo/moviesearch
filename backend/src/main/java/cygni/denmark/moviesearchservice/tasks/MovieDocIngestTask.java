@@ -1,6 +1,7 @@
 package cygni.denmark.moviesearchservice.tasks;
 
 import cygni.denmark.moviesearchservice.persistence.repositories.MovieDb;
+import cygni.denmark.moviesearchservice.search.documents.ActorDocument;
 import cygni.denmark.moviesearchservice.search.documents.MovieDocument;
 import cygni.denmark.moviesearchservice.search.repositories.MovieDocumentRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Component
@@ -52,15 +55,15 @@ public class MovieDocIngestTask {
   public Integer elasticWindowSize;
 
   @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-  public void streamToElasticFromJpaAndBlock() {
-    Flux.defer(
+  public Mono<Long> streamToElasticFromJpaAndBlock() {
+    return Flux.defer(
             () ->
                 Flux.fromStream(
                     jdbcTemplate.queryForStream(
                         postgresToElasticQuery,
                         (resultSet, rowNum) ->
                             new MovieDb(
-                                resultSet.getObject(1, UUID.class),
+                                UUID.fromString(resultSet.getString(1)),
                                 resultSet.getLong(2),
                                 resultSet.getTimestamp(3),
                                 resultSet.getString(4),
@@ -73,10 +76,16 @@ public class MovieDocIngestTask {
                                 Sets.newHashSet(resultSet.getString(11).split(","))))))
         .map(mov -> modelMapper.map(mov, MovieDocument.class))
         .window(elasticWindowSize) // Splits flux into multiple windows so elastic doesn't choke.
-        .flatMap(movieDocumentRepository::saveAll, 4)
-        .onErrorResume(s -> Mono.empty())
-        .count()
-        .block();
-    log.info("Movie elements also indexed in elastic");
+        .flatMap(this::saveAllWithRetry, 4)
+        .count();
+  }
+
+  private Flux<MovieDocument> saveAllWithRetry(Flux<MovieDocument> movieDocumentFlux) {
+    return movieDocumentRepository.saveAll(movieDocumentFlux)
+            .retryWhen(Retry.backoff(3, Duration.ofSeconds(60)))
+            .onErrorResume(e -> {
+              log.error("Error while saving to elastic", e);
+              return Mono.empty();
+            });
   }
 }
