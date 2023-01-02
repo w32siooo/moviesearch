@@ -22,10 +22,9 @@ public class StateService {
                 stateRepository
                     .findById("0")
                     .orElseGet(
-                        () -> {
-                          cleanElasticService.cleanRepos().block();
-                          return stateRepository.save(new StateDb("0", StateValue.INGESTING));
-                        })
+                        () ->
+                           stateRepository.save(new StateDb("0", StateValue.INGESTING))
+                        )
                     .getState())
         .subscribeOn(Schedulers.boundedElastic());
   }
